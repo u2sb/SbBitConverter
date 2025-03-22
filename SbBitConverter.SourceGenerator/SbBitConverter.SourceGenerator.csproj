@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <Nullable>enable</Nullable>
+
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <AssemblyName>SbBitConverter.SourceGenerator</AssemblyName>
+        <PackageId>SbBitConverter.SourceGeneratorr</PackageId>
+        <PackageTags>Modbus,Iot</PackageTags>
+        <PackageProjectUrl>https://github.com/u2sb/SbBitConverter.git</PackageProjectUrl>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <Title>SbBitConverter.SourceGenerator</Title>
+        <Authors>MonoLogueChi</Authors>
+        <Company>U2SB</Company>
+        <RepositoryUrl>https://github.com/u2sb/SbBitConverter.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageIcon>avatar.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GenerateDocumentationFile>False</GenerateDocumentationFile>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
+        <AnalyzerLanguage>cs</AnalyzerLanguage>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <IsRoslynComponent>true</IsRoslynComponent>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\icons\avatar.png">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+
+</Project>

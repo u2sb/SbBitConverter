@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SbBitConverter/SbBitConverter.csproj" />
+  <Project Path="SbBitConverter.SourceGenerator/SbBitConverter.SourceGenerator.csproj" Id="6eda417f-f25a-7e9b-a649-6aa8257fddc6" />
+</Solution>
