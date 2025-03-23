@@ -7,8 +7,8 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<AssemblyName>SbBitConverter</AssemblyName>
 		<PackageId>SbBitConverter</PackageId>
-		<PackageTags>Modbus,Iot</PackageTags>
-		<Description></Description>
+		<PackageTags>BitConverter,Modbus,Iot</PackageTags>
+		<Description>Sb BitConverter</Description>
 		<PackageProjectUrl>https://github.com/u2sb/SbBitConverter.git</PackageProjectUrl>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<Title>SbBitConverter</Title>
@@ -27,6 +27,18 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
 	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SbBitConverter.Attributes\SbBitConverter.Attributes.csproj" ExcludeAssets="All"  />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\netstandard2.1" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\netstandard2.1" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net8.0" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net8.0" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net9.0" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net9.0" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net10.0" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net10.0" Pack="true" Visible="false" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
 		<None Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.1\cs" Pack="true" Visible="false" />
