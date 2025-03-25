@@ -27,7 +27,7 @@ public static class SbBitConverterStructGenerator
     if (fieldInfos.Count == 0) return;
 
     var source = GenerateCodeForStruct(structSymbol, encodingMode, fieldInfos);
-    context.AddSource($"{structSymbol.Name}_ModbusStruct.g.cs", SourceText.From(source, Encoding.UTF8));
+    context.AddSource($"{structSymbol.Name}_SbBitConverterStruct.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
   private static string GenerateCodeForStruct(INamedTypeSymbol structSymbol, byte encodingMode,
@@ -81,17 +81,21 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("WriteTo(span, mode);");
     sb.AppendLine("return data;");
     sb.AppendLine("}");
+
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public void WriteTo(Span<byte> span, byte mode = {encodingMode})");
     sb.AppendLine("{");
     sb.AppendLine($"CheckLength(span, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toBytesStringBuilder}");
     sb.AppendLine("}");
-    
+
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<byte> AsSpan()");
     sb.AppendLine("{");
     sb.AppendLine($"return this.AsByteSpan();");
     sb.AppendLine("}");
-    
+
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<byte> Slice(int start, int length)");
     sb.AppendLine("{");
     sb.AppendLine("var span = AsSpan();");
@@ -100,6 +104,7 @@ public static class SbBitConverterStructGenerator
 
     sb.AppendLine($"public Span<byte> this[Range range]");
     sb.AppendLine("{");
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine("get");
     sb.AppendLine("{");
     sb.AppendLine("var span = AsSpan();");

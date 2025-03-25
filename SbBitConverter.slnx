@@ -6,4 +6,5 @@
   <Project Path="SbBitConverter.SourceGenerator/SbBitConverter.SourceGenerator.csproj" Id="6eda417f-f25a-7e9b-a649-6aa8257fddc6">
     <BuildDependency Project="SbBitConverter.Attributes/SbBitConverter.Attributes.csproj" />
   </Project>
+  <Project Path="T0/T0.csproj" Id="ae556a85-8d7b-4976-9c06-222b643d3316" />
 </Solution>

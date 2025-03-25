@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SbBitConverter.SourceGenerator;
@@ -17,13 +19,15 @@ public class SbStructGenerator : ISourceGenerator
   {
     if (context.SyntaxReceiver is not SbBitConverterStructSyntaxReceiver receiver) return;
 
+    var isUnsafe = context.Compilation is CSharpCompilation { Options.AllowUnsafe: true };
+
     foreach (var structDecl in receiver.Structs)
     {
       var model = context.Compilation.GetSemanticModel(structDecl.SyntaxTree);
-      if (model.GetDeclaredSymbol(structDecl) is not INamedTypeSymbol structSymbol) continue;
+      if (ModelExtensions.GetDeclaredSymbol(model, structDecl) is not INamedTypeSymbol structSymbol) continue;
 
       SbBitConverterStructGenerator.Gen(context, structSymbol);
-      SbBitConverterArrayGenerator.Gen(context, structSymbol);
+      SbBitConverterArrayGenerator.Gen(context, structSymbol, isUnsafe);
     }
   }
 }

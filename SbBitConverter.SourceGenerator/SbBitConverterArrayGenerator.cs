@@ -10,16 +10,17 @@ public static class SbBitConverterArrayGenerator
 {
   private const string SbBitConverterArrayAttributeName = "SbBitConverter.Attributes.SbBitConverterArrayAttribute";
 
-  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol)
+  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe)
   {
     var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol);
     if (sbBitConverterArrayInfo is null) return;
 
-    var source = GenerateCodeForStruct(structSymbol, sbBitConverterArrayInfo);
-    context.AddSource($"{structSymbol.Name}_ModbusArray.g.cs", SourceText.From(source, Encoding.UTF8));
+    var source = GenerateCodeForStruct(structSymbol, sbBitConverterArrayInfo, isUnsafe);
+    context.AddSource($"{structSymbol.Name}_SbBitConverterArray.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
-  private static string GenerateCodeForStruct(INamedTypeSymbol structSymbol, SbBitConverterArrayInfo arrayInfo)
+  private static string GenerateCodeForStruct(INamedTypeSymbol structSymbol, SbBitConverterArrayInfo arrayInfo,
+    bool isUnsafe)
   {
     var structName = structSymbol.Name;
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
@@ -39,6 +40,15 @@ public static class SbBitConverterArrayGenerator
     {
       sb.AppendLine($"namespace {namespaceName}");
       sb.AppendLine("{");
+    }
+
+    if (isUnsafe)
+    {
+      sb.AppendLine($"unsafe partial struct {structName}");
+      sb.AppendLine("{");
+      sb.Append("[FieldOffset(0)]");
+      sb.AppendLine($"public fixed {elementTypeName} source[{elementSize}];");
+      sb.AppendLine("}");
     }
 
     sb.AppendLine(
@@ -98,6 +108,8 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("WriteTo(span, mode);");
     sb.AppendLine("return data;");
     sb.AppendLine("}");
+
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public void WriteTo(Span<byte> span, byte mode = {arrayInfo.Mode})");
     sb.AppendLine("{");
     sb.AppendLine($"CheckLength(span, Unsafe.SizeOf<{structName}>());");
@@ -144,11 +156,13 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("}");
     sb.AppendLine("}");
 
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<{elementTypeName}> AsSpan()");
     sb.AppendLine("{");
-    sb.AppendLine($"return SbBitConverter.Utils.BitConverter.AsSpan<{structName}, {elementTypeName}>(this);");
+    sb.AppendLine($"return SbBitConverter.Utils.SbBitConverter.AsSpan<{structName}, {elementTypeName}>(this);");
     sb.AppendLine("}");
-    
+
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<{elementTypeName}> Slice(int start, int length)");
     sb.AppendLine("{");
     sb.AppendLine("var span = AsSpan();");
@@ -157,6 +171,7 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine($"public Span<{elementTypeName}> this[Range range]");
     sb.AppendLine("{");
+    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine("get");
     sb.AppendLine("{");
     sb.AppendLine("var span = AsSpan();");

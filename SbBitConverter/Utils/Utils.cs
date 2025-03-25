@@ -1,5 +1,6 @@
-using System;
 using SbBitConverter.Models;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace SbBitConverter.Utils;
 
@@ -15,6 +16,7 @@ public static class Utils
   /// <param name="data"></param>
   /// <param name="expectedLength"></param>
   /// <exception cref="InvalidArrayLengthException"></exception>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void CheckLength(ReadOnlySpan<byte> data, int expectedLength)
   {
     if (data.Length < expectedLength) throw new InvalidArrayLengthException(expectedLength, data.Length);
@@ -26,6 +28,7 @@ public static class Utils
   /// <param name="data"></param>
   /// <param name="expectedLength"></param>
   /// <exception cref="InvalidArrayLengthException"></exception>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void CheckLength(Span<byte> data, int expectedLength)
   {
     if (data.Length < expectedLength) throw new InvalidArrayLengthException(expectedLength, data.Length);
@@ -37,6 +40,7 @@ public static class Utils
   /// <param name="data"></param>
   /// <param name="expectedLength"></param>
   /// <exception cref="InvalidArrayLengthException"></exception>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void CheckLength(byte[] data, int expectedLength)
   {
     if (data.Length < expectedLength) throw new InvalidArrayLengthException(expectedLength, data.Length);

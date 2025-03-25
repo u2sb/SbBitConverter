@@ -11,7 +11,7 @@ namespace SbBitConverter.Utils;
 /// <summary>
 ///   转换类
 /// </summary>
-public static class BitConverter
+public static class SbBitConverter
 {
   /// <summary>
   ///   转换为 short 类型
@@ -19,6 +19,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static short ToInt16(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
     return useBigEndianMode
@@ -32,6 +33,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ushort ToUInt16(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
     return useBigEndianMode
@@ -45,6 +47,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static int ToInt32(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
     return useBigEndianMode
@@ -58,6 +61,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static uint ToUInt32(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
     return useBigEndianMode
@@ -71,6 +75,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static long ToInt64(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
     return useBigEndianMode
@@ -84,6 +89,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ulong ToUInt64(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
     return useBigEndianMode
@@ -97,6 +103,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static float ToSingle(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
 #if NETSTANDARD
@@ -114,6 +121,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static double ToDouble(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
 #if NETSTANDARD
@@ -133,6 +141,7 @@ public static class BitConverter
   /// <typeparam name="T"></typeparam>
   /// <param name="value">数据</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this T value) where T : struct
   {
     return AsReadOnlySpan<T, byte>(value);
@@ -144,6 +153,7 @@ public static class BitConverter
   /// <typeparam name="T"></typeparam>
   /// <param name="value">数据</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Span<byte> AsByteSpan<T>(this T value) where T : struct
   {
     return AsSpan<T, byte>(value);
@@ -156,6 +166,7 @@ public static class BitConverter
   /// <typeparam name="TFrom"></typeparam>
   /// <typeparam name="TTo"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Span<TTo> AsSpan<TFrom, TTo>(this TFrom value) where TFrom : struct where TTo : struct
   {
     var size = Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
@@ -170,6 +181,7 @@ public static class BitConverter
   /// <typeparam name="TFrom"></typeparam>
   /// <typeparam name="TTo"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ReadOnlySpan<TTo> AsReadOnlySpan<TFrom, TTo>(this TFrom value) where TFrom : struct where TTo : struct
   {
     var size = Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
@@ -182,6 +194,7 @@ public static class BitConverter
   /// </summary>
   /// <param name="data"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this ReadOnlySpan<T> data) where T : struct
   {
     return MemoryMarshal.AsBytes(data);
@@ -192,6 +205,7 @@ public static class BitConverter
   /// </summary>
   /// <param name="data"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Span<byte> AsByteSpan<T>(this Span<T> data) where T : struct
   {
     return MemoryMarshal.AsBytes(data);
@@ -203,6 +217,7 @@ public static class BitConverter
   /// <param name="data"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ReadOnlySpan<T> Cast<T>(this ReadOnlySpan<byte> data) where T : struct
   {
     return MemoryMarshal.Cast<byte, T>(data);
@@ -214,6 +229,7 @@ public static class BitConverter
   /// <param name="data"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Span<T> Cast<T>(this Span<byte> data) where T : struct
   {
     return MemoryMarshal.Cast<byte, T>(data);
@@ -224,6 +240,7 @@ public static class BitConverter
   /// </summary>
   /// <param name="data"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Memory<byte> AsByteMemory<T>(this Memory<T> data) where T : struct
   {
     return Cast<T, byte>(data);
@@ -346,6 +363,7 @@ public static class BitConverter
   /// <param name="value">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static byte[] ToBytes<T>(this T value, bool useBigEndianMode = false) where T : unmanaged
   {
     return ToBytes(value, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
@@ -358,6 +376,7 @@ public static class BitConverter
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static byte[] ToBytes<T>(this T value, byte mode) where T : unmanaged
   {
     return ToBytes(value, (BigAndSmallEndianEncodingMode)mode);
@@ -370,6 +389,7 @@ public static class BitConverter
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static byte[] ToBytes<T>(this T value, BigAndSmallEndianEncodingMode mode) where T : unmanaged
   {
     var size = Unsafe.SizeOf<T>();
@@ -385,6 +405,7 @@ public static class BitConverter
   /// <param name="data"></param>
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void WriteTo<T>(this T value, Span<byte> data, byte mode)
     where T : unmanaged
   {
@@ -399,6 +420,7 @@ public static class BitConverter
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <exception cref="ArgumentOutOfRangeException"></exception>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void WriteTo<T>(this T value, Span<byte> data, BigAndSmallEndianEncodingMode mode)
     where T : unmanaged
   {
@@ -419,6 +441,7 @@ public static class BitConverter
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static T ToT<T>(this ReadOnlySpan<byte> data, bool useBigEndianMode = false) where T : unmanaged
   {
     return ToT<T>(data, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
@@ -431,6 +454,7 @@ public static class BitConverter
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static T ToT<T>(this ReadOnlySpan<byte> data, byte mode) where T : unmanaged
   {
     return ToT<T>(data, (BigAndSmallEndianEncodingMode)mode);
@@ -445,6 +469,7 @@ public static class BitConverter
   /// <returns></returns>
   /// <exception cref="ArgumentException"></exception>
   /// <exception cref="ArgumentOutOfRangeException"></exception>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static T ToT<T>(this ReadOnlySpan<byte> data, BigAndSmallEndianEncodingMode mode) where T : unmanaged
   {
     T value = default;
@@ -460,6 +485,7 @@ public static class BitConverter
   /// <param name="mode"></param>
   /// <param name="value"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void CopyTo<T>(this ReadOnlySpan<byte> data, ref T value,
     BigAndSmallEndianEncodingMode mode)
     where T : unmanaged
@@ -481,6 +507,7 @@ public static class BitConverter
   /// <param name="mode"></param>
   /// <param name="value"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static void CopyTo<T>(this Span<byte> data, ref T value,
     BigAndSmallEndianEncodingMode mode)
     where T : unmanaged
@@ -494,6 +521,7 @@ public static class BitConverter
     ApplyEndianness(span, mode);
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   private static void ApplyEndianness(Span<byte> span, BigAndSmallEndianEncodingMode mode)
   {
     // 如果是单字节，也就是 byte 类型，直接返回

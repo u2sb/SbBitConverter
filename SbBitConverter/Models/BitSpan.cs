@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using SbBitConverter.Utils;
-using BitConverter = SbBitConverter.Utils.BitConverter;
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 
@@ -304,7 +303,7 @@ public readonly ref struct BitSpan
   {
     Span<byte> span = stackalloc byte[Unsafe.SizeOf<T>()];
     CopyTo(span, offset, length);
-    return BitConverter.ToT<T>(span, useBigEndianMode);
+    return Utils.SbBitConverter.ToT<T>(span, useBigEndianMode);
   }
 
   public void CopyTo(Span<byte> destination, int bitOffset, int bitCount)
