@@ -14,7 +14,7 @@ public static class SbBitConverterStructGenerator
   private const string FieldOffsetAttributeName = "System.Runtime.InteropServices.FieldOffsetAttribute";
 
 
-  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol)
+  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe)
   {
     var sbBitConverterAttr = structSymbol.GetAttributes().FirstOrDefault(attr =>
       attr.AttributeClass != null && attr.AttributeClass.ToDisplayString() == SbBitConverterStructAttributeName);
@@ -26,12 +26,12 @@ public static class SbBitConverterStructGenerator
 
     if (fieldInfos.Count == 0) return;
 
-    var source = GenerateCodeForStruct(structSymbol, encodingMode, fieldInfos);
+    var source = GenerateCodeForStruct(structSymbol, encodingMode, fieldInfos, isUnsafe);
     context.AddSource($"{structSymbol.Name}_SbBitConverterStruct.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
   private static string GenerateCodeForStruct(INamedTypeSymbol structSymbol, byte encodingMode,
-    List<FieldInfo> fieldInfos)
+    List<FieldInfo> fieldInfos, bool isUnsafe)
   {
     var structName = structSymbol.Name;
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
@@ -53,6 +53,7 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("using SbBitConverter.Utils;");
     sb.AppendLine("using System;");
     sb.AppendLine("using System.Runtime.CompilerServices;");
+    sb.AppendLine("using System.Runtime.InteropServices;");
     sb.AppendLine("using static SbBitConverter.Utils.Utils;");
 
     if (!isGlobalNamespace)
@@ -70,7 +71,7 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("}");
     sb.AppendLine($"public {structName}(ReadOnlySpan<ushort> data0, byte mode = {encodingMode})");
     sb.AppendLine("{");
-    sb.AppendLine("var data = data0.AsReadOnlyByteSpan();");
+    sb.AppendLine("var data = MemoryMarshal.AsBytes(data0);");
     sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toTStringBuilder}");
     sb.AppendLine("}");
@@ -92,7 +93,20 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<byte> AsSpan()");
     sb.AppendLine("{");
-    sb.AppendLine($"return this.AsByteSpan();");
+    if (isUnsafe)
+    {
+      sb.AppendLine("unsafe");
+      sb.AppendLine("{");
+      sb.AppendLine($"fixed (void* p = &this)");
+      sb.AppendLine("{");
+      sb.AppendLine($"return new Span<byte>(p, Unsafe.SizeOf<{structName}>());");
+      sb.AppendLine("}");
+      sb.AppendLine("}");
+    }
+    else
+    {
+      sb.AppendLine($"return MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref this, 1));");
+    }
     sb.AppendLine("}");
 
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");

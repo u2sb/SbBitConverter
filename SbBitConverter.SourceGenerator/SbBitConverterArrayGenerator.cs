@@ -47,7 +47,7 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine($"unsafe partial struct {structName}");
       sb.AppendLine("{");
       sb.Append("[FieldOffset(0)]");
-      sb.AppendLine($"public fixed {elementTypeName} source[{elementSize}];");
+      sb.AppendLine($"public fixed {elementTypeName} source[{arrayInfo.Length}];");
       sb.AppendLine("}");
     }
 
@@ -77,7 +77,7 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine($"public {structName}(ReadOnlySpan<ushort> data0, byte mode = {arrayInfo.Mode})");
     sb.AppendLine("{");
-    sb.AppendLine("var data = data0.AsReadOnlyByteSpan();");
+    sb.AppendLine("var data = MemoryMarshal.AsBytes(data0);");
     sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
@@ -159,7 +159,22 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<{elementTypeName}> AsSpan()");
     sb.AppendLine("{");
-    sb.AppendLine($"return SbBitConverter.Utils.SbBitConverter.AsSpan<{structName}, {elementTypeName}>(this);");
+    if (isUnsafe)
+    {
+      sb.AppendLine("unsafe");
+      sb.AppendLine("{");
+      sb.AppendLine($"fixed ({elementTypeName}* p = source)");
+      sb.AppendLine("{");
+      sb.AppendLine($"return new Span<{elementTypeName}>(p, Length);");
+      sb.AppendLine("}");
+      sb.AppendLine("}");
+    }
+    else
+    {
+      sb.AppendLine(
+        $"return MemoryMarshal.Cast<{structName},{elementTypeName}>(MemoryMarshal.CreateSpan(ref this, 1));");
+    }
+
     sb.AppendLine("}");
 
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");

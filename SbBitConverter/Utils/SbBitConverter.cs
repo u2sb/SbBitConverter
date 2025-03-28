@@ -133,110 +133,10 @@ public static class SbBitConverter
 #endif
   }
 
-  #region 类型解释
+  #region Memory 转换
 
   /// <summary>
-  ///   解释为 byte[]
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="value">数据</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this T value) where T : struct
-  {
-    return AsReadOnlySpan<T, byte>(value);
-  }
-
-  /// <summary>
-  ///   解释为 byte[]
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="value">数据</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Span<byte> AsByteSpan<T>(this T value) where T : struct
-  {
-    return AsSpan<T, byte>(value);
-  }
-
-  /// <summary>
-  ///   转换到类型 Span T
-  /// </summary>
-  /// <param name="value"></param>
-  /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Span<TTo> AsSpan<TFrom, TTo>(this TFrom value) where TFrom : struct where TTo : struct
-  {
-    var size = Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
-    ref var reference = ref Unsafe.As<TFrom, TTo>(ref value);
-    return MemoryMarshal.CreateSpan(ref reference, size);
-  }
-
-  /// <summary>
-  ///   转换到类型 Span T
-  /// </summary>
-  /// <param name="value"></param>
-  /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ReadOnlySpan<TTo> AsReadOnlySpan<TFrom, TTo>(this TFrom value) where TFrom : struct where TTo : struct
-  {
-    var size = Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
-    ref var reference = ref Unsafe.As<TFrom, TTo>(ref value);
-    return MemoryMarshal.CreateReadOnlySpan(ref reference, size);
-  }
-
-  /// <summary>
-  ///   解释为 byte[]
-  /// </summary>
-  /// <param name="data"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this ReadOnlySpan<T> data) where T : struct
-  {
-    return MemoryMarshal.AsBytes(data);
-  }
-
-  /// <summary>
-  ///   解释为 byte[]
-  /// </summary>
-  /// <param name="data"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Span<byte> AsByteSpan<T>(this Span<T> data) where T : struct
-  {
-    return MemoryMarshal.AsBytes(data);
-  }
-
-  /// <summary>
-  ///   转换到类型 Span T
-  /// </summary>
-  /// <param name="data"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ReadOnlySpan<T> Cast<T>(this ReadOnlySpan<byte> data) where T : struct
-  {
-    return MemoryMarshal.Cast<byte, T>(data);
-  }
-
-  /// <summary>
-  ///   转换到类型 Span T
-  /// </summary>
-  /// <param name="data"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Span<T> Cast<T>(this Span<byte> data) where T : struct
-  {
-    return MemoryMarshal.Cast<byte, T>(data);
-  }
-
-  /// <summary>
-  ///   解释为 byte[]
+  ///   解释为 MemoryByte
   /// </summary>
   /// <param name="data"></param>
   /// <returns></returns>
@@ -294,10 +194,6 @@ public static class SbBitConverter
       return cmm.Memory;
     }
   }
-
-  #endregion
-
-  #region MemoryManager类
 
   private sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> from) : MemoryManager<TTo>
     where TFrom : struct
@@ -493,7 +389,7 @@ public static class SbBitConverter
     var size = Unsafe.SizeOf<T>();
     CheckLength(data, size);
 
-    var span = value.AsByteSpan();
+    var span = new Span<byte>();
     data.CopyTo(span);
 
     ApplyEndianness(span, mode);
@@ -515,7 +411,7 @@ public static class SbBitConverter
     var size = Unsafe.SizeOf<T>();
     CheckLength(data, size);
 
-    var span = value.AsByteSpan();
+    var span = MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), Unsafe.SizeOf<T>());
     data.CopyTo(span);
 
     ApplyEndianness(span, mode);
@@ -531,10 +427,10 @@ public static class SbBitConverter
     switch (mode)
     {
       case BigAndSmallEndianEncodingMode.DCBA:
-        if (!System.BitConverter.IsLittleEndian) span.Reverse();
+        if (!BitConverter.IsLittleEndian) span.Reverse();
         break;
       case BigAndSmallEndianEncodingMode.ABCD:
-        if (System.BitConverter.IsLittleEndian) span.Reverse();
+        if (BitConverter.IsLittleEndian) span.Reverse();
         break;
       case BigAndSmallEndianEncodingMode.BADC:
         // 二字节翻转，前后不翻转
@@ -546,14 +442,14 @@ public static class SbBitConverter
           sp.Reverse();
         }
 
-        if (!System.BitConverter.IsLittleEndian) span.Reverse();
+        if (!BitConverter.IsLittleEndian) span.Reverse();
         break;
       case BigAndSmallEndianEncodingMode.CDAB:
         // 二字节不翻转，前后翻转
         // 解释为ushort，然后整体翻转
-        var us = span.Cast<ushort>();
+        var us = MemoryMarshal.Cast<byte, ushort>(span);
         us.Reverse();
-        if (!System.BitConverter.IsLittleEndian) span.Reverse();
+        if (!BitConverter.IsLittleEndian) span.Reverse();
         break;
       default:
         throw new ArgumentOutOfRangeException(nameof(mode), mode, null);

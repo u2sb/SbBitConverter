@@ -13,9 +13,13 @@
     <ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" />
     <ProjectReference Include="..\SbBitConverter\SbBitConverter.csproj" />
   </ItemGroup>
-
+ 
 	<ItemGroup>
-		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll"/>
+		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
 	</ItemGroup>
+
+	<!-- <ItemGroup> -->
+	<!--   <PackageReference Include="SbBitConverter" Version="0.0.2" /> -->
+	<!-- </ItemGroup> -->
 
 </Project>

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SbBitConverter.Attributes;
 
@@ -16,4 +17,6 @@ public partial struct Float3
 public partial struct MyStruct
 {
   [FieldOffset(0)] private Float3 _float3;
+
+  [FieldOffset(4)] private float _f1;
 }

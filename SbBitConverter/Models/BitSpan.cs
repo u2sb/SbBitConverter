@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using SbBitConverter.Utils;
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
@@ -37,14 +38,14 @@ public readonly ref struct BitSpan
 
   public BitSpan(Span<ushort> buffer)
   {
-    _span = buffer.AsByteSpan();
+    _span = MemoryMarshal.AsBytes(buffer);
     Length = _span.Length * 8;
     _startBitOffset = 0;
   }
 
   public BitSpan(Span<short> buffer)
   {
-    _span = buffer.AsByteSpan();
+    _span = MemoryMarshal.AsBytes(buffer);
     Length = _span.Length * 8;
     _startBitOffset = 0;
   }

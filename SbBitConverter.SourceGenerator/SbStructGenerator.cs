@@ -26,7 +26,7 @@ public class SbStructGenerator : ISourceGenerator
       var model = context.Compilation.GetSemanticModel(structDecl.SyntaxTree);
       if (ModelExtensions.GetDeclaredSymbol(model, structDecl) is not INamedTypeSymbol structSymbol) continue;
 
-      SbBitConverterStructGenerator.Gen(context, structSymbol);
+      SbBitConverterStructGenerator.Gen(context, structSymbol, isUnsafe);
       SbBitConverterArrayGenerator.Gen(context, structSymbol, isUnsafe);
     }
   }
