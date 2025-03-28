@@ -389,10 +389,15 @@ public static class SbBitConverter
     var size = Unsafe.SizeOf<T>();
     CheckLength(data, size);
 
-    var span = new Span<byte>();
-    data.CopyTo(span);
-
-    ApplyEndianness(span, mode);
+    unsafe
+    {
+      fixed (T* p = &value)
+      {
+        var span = new Span<byte>(p, size);
+        data.CopyTo(span);
+        ApplyEndianness(span, mode);
+      }
+    }
   }
 
   /// <summary>
@@ -411,10 +416,15 @@ public static class SbBitConverter
     var size = Unsafe.SizeOf<T>();
     CheckLength(data, size);
 
-    var span = MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), Unsafe.SizeOf<T>());
-    data.CopyTo(span);
-
-    ApplyEndianness(span, mode);
+    unsafe
+    {
+      fixed (T* p = &value)
+      {
+        var span = new Span<byte>(p, size);
+        data.CopyTo(span);
+        ApplyEndianness(span, mode);
+      }
+    }
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

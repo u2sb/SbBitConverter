@@ -97,7 +97,7 @@ public static class SbBitConverterStructGenerator
     {
       sb.AppendLine("unsafe");
       sb.AppendLine("{");
-      sb.AppendLine($"fixed (void* p = &this)");
+      sb.AppendLine($"fixed ({structName}* p = &this)");
       sb.AppendLine("{");
       sb.AppendLine($"return new Span<byte>(p, Unsafe.SizeOf<{structName}>());");
       sb.AppendLine("}");
