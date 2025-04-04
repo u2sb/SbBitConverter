@@ -75,7 +75,7 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toTStringBuilder}");
     sb.AppendLine("}");
-    sb.AppendLine($"public byte[] ToBytes(byte mode = {encodingMode})");
+    sb.AppendLine($"public byte[] ToByteArray(byte mode = {encodingMode})");
     sb.AppendLine("{");
     sb.AppendLine($"var data = new byte[Unsafe.SizeOf<{structName}>()];");
     sb.AppendLine("var span = data.AsSpan();");

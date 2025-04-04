@@ -64,6 +64,6 @@ public static class Crc16
     var crc = CalculateCrc16(writer.WrittenSpan);
 
     // 注意 CRC 是小端模式 即低字节在前
-    writer.Write(crc.ToBytes());
+    writer.Write(crc.ToByteArray());
   }
 }

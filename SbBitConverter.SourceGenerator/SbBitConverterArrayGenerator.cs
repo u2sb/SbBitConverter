@@ -101,7 +101,7 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine($"private {elementTypeName} _item{i};");
     }
 
-    sb.AppendLine($"public byte[] ToBytes(byte mode = {arrayInfo.Mode})");
+    sb.AppendLine($"public byte[] ToByteArray(byte mode = {arrayInfo.Mode})");
     sb.AppendLine("{");
     sb.AppendLine($"var data = new byte[Unsafe.SizeOf<{structName}>()];");
     sb.AppendLine("var span = data.AsSpan();");

@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -133,201 +132,83 @@ public static class SbBitConverter
 #endif
   }
 
-  #region Memory 转换
-
-  /// <summary>
-  ///   解释为 MemoryByte
-  /// </summary>
-  /// <param name="data"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Memory<byte> AsByteMemory<T>(this Memory<T> data) where T : struct
-  {
-    return Cast<T, byte>(data);
-  }
-
-  /// <summary>
-  ///   Memory转换 类型解释
-  /// </summary>
-  /// <param name="data"></param>
-  /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <returns></returns>
-  public static Memory<TTo> Cast<TFrom, TTo>(this Memory<TFrom> data) where TFrom : struct where TTo : struct
-  {
-    using var cmm = new CastMemoryManager<TFrom, TTo>(data);
-    return cmm.Memory;
-  }
-
-  /// <summary>
-  ///   转换到Memory
-  /// </summary>
-  /// <param name="data"></param>
-  /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <returns></returns>
-  public static Memory<TTo> AsMemory<TFrom, TTo>(this ReadOnlySpan<TFrom> data)
-    where TFrom : struct where TTo : struct
-  {
-    unsafe
-    {
-      var ptr = Unsafe.AsPointer(ref MemoryMarshal.GetReference(data));
-      using var cmm = new PointerMemoryManager<TTo>(ptr, data.Length * Unsafe.SizeOf<TFrom>());
-      return cmm.Memory;
-    }
-  }
-
-  /// <summary>
-  ///   转换到Memory
-  /// </summary>
-  /// <param name="data"></param>
-  /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <returns></returns>
-  public static Memory<TTo> AsMemory<TFrom, TTo>(this Span<TFrom> data)
-    where TFrom : struct where TTo : struct
-  {
-    unsafe
-    {
-      var ptr = Unsafe.AsPointer(ref MemoryMarshal.GetReference(data));
-      using var cmm = new PointerMemoryManager<TTo>(ptr, data.Length * Unsafe.SizeOf<TFrom>());
-      return cmm.Memory;
-    }
-  }
-
-  private sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> from) : MemoryManager<TTo>
-    where TFrom : struct
-    where TTo : struct
-  {
-    public override Span<TTo> GetSpan()
-    {
-      return MemoryMarshal.Cast<TFrom, TTo>(from.Span);
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-    }
-
-    public override MemoryHandle Pin(int elementIndex = 0)
-    {
-      throw new NotSupportedException();
-    }
-
-    public override void Unpin()
-    {
-    }
-  }
-
-  private sealed unsafe class PointerMemoryManager<T> : MemoryManager<T> where T : struct
-  {
-    private readonly int _length;
-    private readonly void* _pointer;
-
-    internal PointerMemoryManager(void* pointer, int length)
-    {
-      _pointer = pointer;
-      _length = length;
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-    }
-
-    public override Span<T> GetSpan()
-    {
-      return new Span<T>(_pointer, _length);
-    }
-
-    public override MemoryHandle Pin(int elementIndex = 0)
-    {
-      throw new NotSupportedException();
-    }
-
-    public override void Unpin()
-    {
-    }
-  }
-
-  #endregion
-
   #region 通用类型转换
 
   /// <summary>
   ///   转换到 byte[]
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  /// <param name="value">数据</param>
+  /// <param name="source">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte[] ToBytes<T>(this T value, bool useBigEndianMode = false) where T : unmanaged
+  public static byte[] ToByteArray<T>(this T source, bool useBigEndianMode = false) where T : unmanaged
   {
-    return ToBytes(value, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
+    return ToByteArray(source,
+      useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
   }
 
   /// <summary>
   ///   转换到 byte[]
   /// </summary>
-  /// <param name="value"></param>
+  /// <param name="source"></param>
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte[] ToBytes<T>(this T value, byte mode) where T : unmanaged
+  public static byte[] ToByteArray<T>(this T source, byte mode) where T : unmanaged
   {
-    return ToBytes(value, (BigAndSmallEndianEncodingMode)mode);
+    return ToByteArray(source, (BigAndSmallEndianEncodingMode)mode);
   }
 
   /// <summary>
   ///   转换到 byte[]
   /// </summary>
-  /// <param name="value"></param>
+  /// <param name="source"></param>
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte[] ToBytes<T>(this T value, BigAndSmallEndianEncodingMode mode) where T : unmanaged
+  public static byte[] ToByteArray<T>(this T source, BigAndSmallEndianEncodingMode mode) where T : unmanaged
   {
     var size = Unsafe.SizeOf<T>();
     var result = new byte[size];
-    WriteTo(value, result.AsSpan(), mode);
+    WriteTo(source, result.AsSpan(), mode);
     return result;
   }
 
   /// <summary>
   ///   转换到 byte[]
   /// </summary>
-  /// <param name="value"></param>
-  /// <param name="data"></param>
+  /// <param name="source"></param>
+  /// <param name="destination"></param>
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void WriteTo<T>(this T value, Span<byte> data, byte mode)
+  public static void WriteTo<T>(this T source, Span<byte> destination, byte mode)
     where T : unmanaged
   {
-    WriteTo(value, data, (BigAndSmallEndianEncodingMode)mode);
+    WriteTo(source, destination, (BigAndSmallEndianEncodingMode)mode);
   }
 
   /// <summary>
   ///   转换到 byte[]
   /// </summary>
-  /// <param name="value"></param>
-  /// <param name="data"></param>
+  /// <param name="source"></param>
+  /// <param name="destination"></param>
   /// <param name="mode"></param>
   /// <typeparam name="T"></typeparam>
   /// <exception cref="ArgumentOutOfRangeException"></exception>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void WriteTo<T>(this T value, Span<byte> data, BigAndSmallEndianEncodingMode mode)
+  public static void WriteTo<T>(this T source, Span<byte> destination, BigAndSmallEndianEncodingMode mode)
     where T : unmanaged
   {
     var size = Unsafe.SizeOf<T>();
-    CheckLength(data, size);
+    CheckLength(destination, size);
 
-    if (data.Length > size) data = data[..size];
+    Unsafe.As<byte, T>(ref MemoryMarshal.GetReference(destination)) = source;
 
-    Unsafe.As<byte, T>(ref MemoryMarshal.GetReference(data)) = value;
-
-    ApplyEndianness(data, mode);
+    ApplyEndianness(destination[..size], mode);
   }
 
   /// <summary>
@@ -369,7 +250,7 @@ public static class SbBitConverter
   public static T ToT<T>(this ReadOnlySpan<byte> data, BigAndSmallEndianEncodingMode mode) where T : unmanaged
   {
     T value = default;
-    data.CopyTo(ref value, mode);
+    data.WriteTo(ref value, mode);
     return value;
   }
 
@@ -377,24 +258,24 @@ public static class SbBitConverter
   ///   写入到 T
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  /// <param name="data"></param>
+  /// <param name="source"></param>
   /// <param name="mode"></param>
-  /// <param name="value"></param>
+  /// <param name="destination"></param>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void CopyTo<T>(this ReadOnlySpan<byte> data, ref T value,
+  public static void WriteTo<T>(this ReadOnlySpan<byte> source, ref T destination,
     BigAndSmallEndianEncodingMode mode)
     where T : unmanaged
   {
     var size = Unsafe.SizeOf<T>();
-    CheckLength(data, size);
+    CheckLength(source, size);
 
     unsafe
     {
-      fixed (T* p = &value)
+      fixed (T* p = &destination)
       {
         var span = new Span<byte>(p, size);
-        data.CopyTo(span);
+        source.CopyTo(span);
         ApplyEndianness(span, mode);
       }
     }
@@ -404,24 +285,24 @@ public static class SbBitConverter
   ///   写入到 T
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  /// <param name="data"></param>
+  /// <param name="source"></param>
   /// <param name="mode"></param>
-  /// <param name="value"></param>
+  /// <param name="destination"></param>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void CopyTo<T>(this Span<byte> data, ref T value,
+  public static void WriteTo<T>(this Span<byte> source, ref T destination,
     BigAndSmallEndianEncodingMode mode)
     where T : unmanaged
   {
     var size = Unsafe.SizeOf<T>();
-    CheckLength(data, size);
+    CheckLength(source, size);
 
     unsafe
     {
-      fixed (T* p = &value)
+      fixed (T* p = &destination)
       {
         var span = new Span<byte>(p, size);
-        data.CopyTo(span);
+        source.CopyTo(span);
         ApplyEndianness(span, mode);
       }
     }
@@ -434,24 +315,24 @@ public static class SbBitConverter
     var size = span.Length;
     if (size == 1) return;
 
+    if (span.Length % 2 != 0)
+      throw new ArgumentException("Data length must be even.");
+
     switch (mode)
     {
+      // 小端序模式（DCBA）
       case BigAndSmallEndianEncodingMode.DCBA:
         if (!BitConverter.IsLittleEndian) span.Reverse();
         break;
+
+      // 大端序模式（ABCD）
       case BigAndSmallEndianEncodingMode.ABCD:
         if (BitConverter.IsLittleEndian) span.Reverse();
         break;
       case BigAndSmallEndianEncodingMode.BADC:
         // 二字节翻转，前后不翻转
-        // 已经判断过，必须为 2 的倍数
-
-        for (var i = 0; i < size; i += 2)
-        {
-          var sp = span.Slice(i, 2);
-          sp.Reverse();
-        }
-
+        var ushortSpan = MemoryMarshal.Cast<byte, ushort>(span);
+        foreach (ref var value in ushortSpan) value = BinaryPrimitives.ReverseEndianness(value);
         if (!BitConverter.IsLittleEndian) span.Reverse();
         break;
       case BigAndSmallEndianEncodingMode.CDAB:
