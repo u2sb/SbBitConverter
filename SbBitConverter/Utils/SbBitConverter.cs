@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -131,6 +132,67 @@ public static class SbBitConverter
       : BinaryPrimitives.ReadDoubleLittleEndian(data);
 #endif
   }
+
+  #region Memory转换
+
+  /// <summary>
+  ///   Memory 转换
+  /// </summary>
+  /// <param name="memory"></param>
+  /// <typeparam name="TFrom"></typeparam>
+  /// <typeparam name="TTo"></typeparam>
+  /// <returns></returns>
+  public static Memory<TTo> Cast<TFrom, TTo>(this Memory<TFrom> memory)
+    where TFrom : unmanaged
+    where TTo : unmanaged
+  {
+    if (typeof(TFrom) == typeof(TTo))
+      return (Memory<TTo>)(object)memory;
+
+    return new CastMemoryManager<TFrom, TTo>(memory).Memory;
+  }
+
+
+  /// <summary>
+  /// </summary>
+  /// <typeparam name="TFrom"></typeparam>
+  /// <typeparam name="TTo"></typeparam>
+  /// <param name="memory"></param>
+  public sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> memory) : MemoryManager<TTo>
+    where TFrom : unmanaged
+    where TTo : unmanaged
+  {
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+    }
+
+    /// <inheritdoc />
+    public override Span<TTo> GetSpan()
+    {
+      return MemoryMarshal.Cast<TFrom, TTo>(memory.Span);
+    }
+
+    /// <inheritdoc />
+    public override MemoryHandle Pin(int elementIndex = 0)
+    {
+      var byteOffset = elementIndex * Unsafe.SizeOf<TTo>();
+      var shiftedOffset = Math.DivRem(byteOffset, Unsafe.SizeOf<TFrom>(), out var remainder);
+
+      if (remainder != 0)
+        throw new ArgumentException("The input index doesn't result in an aligned item access",
+          nameof(elementIndex));
+
+      return memory[shiftedOffset..].Pin();
+    }
+
+    /// <inheritdoc />
+    public override void Unpin()
+    {
+    }
+  }
+
+  #endregion
 
   #region 通用类型转换
 
