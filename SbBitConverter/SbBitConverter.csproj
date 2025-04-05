@@ -25,10 +25,10 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\SbBitConverter.Attributes\SbBitConverter.Attributes.csproj" ExcludeAssets="All"  />
+		<ProjectReference Include="..\SbBitConverter.Attributes\SbBitConverter.Attributes.csproj" ExcludeAssets="All" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\netstandard2.1" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\netstandard2.1" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net8.0" Pack="true" Visible="false" />
