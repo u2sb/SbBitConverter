@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;net6.0;net8.0;net10.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -31,10 +31,10 @@
 		<ProjectReference Include="..\SbBitConverter.Attributes\SbBitConverter.Attributes.csproj" ExcludeAssets="All" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\netstandard2.1" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\netstandard2.1" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net6.0" Pack="true" Visible="false" />
+		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net6.0" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net8.0" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net8.0" Pack="true" Visible="false" />
-		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net9.0" Pack="true" Visible="false" />
-		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net9.0" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.dll" PackagePath="lib\net10.0" Pack="true" Visible="false" />
 		<None Include="..\SbBitConverter.Attributes\bin\$(Configuration)\netstandard2.0\SbBitConverter.Attributes.xml" PackagePath="lib\net10.0" Pack="true" Visible="false" />
 	</ItemGroup>
