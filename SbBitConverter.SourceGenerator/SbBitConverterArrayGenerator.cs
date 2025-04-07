@@ -12,14 +12,15 @@ public static class SbBitConverterArrayGenerator
 
   public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe)
   {
-    var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol);
+    var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol, context.Compilation);
     if (sbBitConverterArrayInfo is null) return;
 
-    var source = GenerateCodeForStruct(structSymbol, sbBitConverterArrayInfo, isUnsafe);
+    var source = GenerateCodeForStruct(context, structSymbol, sbBitConverterArrayInfo, isUnsafe);
     context.AddSource($"{structSymbol.Name}_SbBitConverterArray.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
-  private static string GenerateCodeForStruct(INamedTypeSymbol structSymbol, SbBitConverterArrayInfo arrayInfo,
+  private static string GenerateCodeForStruct(GeneratorExecutionContext context, INamedTypeSymbol structSymbol,
+    SbBitConverterArrayInfo arrayInfo,
     bool isUnsafe)
   {
     var structName = structSymbol.Name;
@@ -198,7 +199,7 @@ public static class SbBitConverterArrayGenerator
     return sb.ToString();
   }
 
-  private static SbBitConverterArrayInfo? GetSbBitConverterInfo(INamedTypeSymbol structSymbol)
+  private static SbBitConverterArrayInfo? GetSbBitConverterInfo(INamedTypeSymbol structSymbol, Compilation compilation)
   {
     var sbBitConverterAttr = structSymbol.GetAttributes().FirstOrDefault(attr =>
       attr.AttributeClass != null && attr.AttributeClass.ToDisplayString() == SbBitConverterArrayAttributeName);
@@ -207,7 +208,7 @@ public static class SbBitConverterArrayGenerator
         sbBitConverterAttr.ConstructorArguments[1].Value is int length
         && sbBitConverterAttr.ConstructorArguments[2].Value is byte mode)
     {
-      var size = SizeOfType(type);
+      var size = SizeOfType(type, compilation);
       return new SbBitConverterArrayInfo(type, size, length, mode);
     }
 

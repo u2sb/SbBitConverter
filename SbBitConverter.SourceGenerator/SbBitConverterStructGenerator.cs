@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-
 using static SbBitConverter.SourceGenerator.Utils;
 
 namespace SbBitConverter.SourceGenerator;
@@ -26,11 +25,12 @@ public static class SbBitConverterStructGenerator
 
     if (fieldInfos.Count == 0) return;
 
-    var source = GenerateCodeForStruct(structSymbol, encodingMode, fieldInfos, isUnsafe);
+    var source = GenerateCodeForStruct(context, structSymbol, encodingMode, fieldInfos, isUnsafe);
     context.AddSource($"{structSymbol.Name}_SbBitConverterStruct.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
-  private static string GenerateCodeForStruct(INamedTypeSymbol structSymbol, byte encodingMode,
+  private static string GenerateCodeForStruct(GeneratorExecutionContext context, INamedTypeSymbol structSymbol,
+    byte encodingMode,
     List<FieldInfo> fieldInfos, bool isUnsafe)
   {
     var structName = structSymbol.Name;
@@ -42,8 +42,8 @@ public static class SbBitConverterStructGenerator
 
     foreach (var fieldInfo in fieldInfos)
     {
-      toTStringBuilder.AppendLine(BitConverterToTString(fieldInfo));
-      toBytesStringBuilder.AppendLine(BitConverterToBytesString(fieldInfo));
+      toTStringBuilder.AppendLine(BitConverterToTString(fieldInfo, context.Compilation));
+      toBytesStringBuilder.AppendLine(BitConverterToBytesString(fieldInfo, context.Compilation));
     }
 
 
@@ -91,7 +91,7 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("}");
 
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"public Span<byte> AsSpan()");
+    sb.AppendLine("public Span<byte> AsSpan()");
     sb.AppendLine("{");
     if (isUnsafe)
     {
@@ -105,18 +105,19 @@ public static class SbBitConverterStructGenerator
     }
     else
     {
-      sb.AppendLine($"return MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref this, 1));");
+      sb.AppendLine("return MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref this, 1));");
     }
+
     sb.AppendLine("}");
 
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"public Span<byte> Slice(int start, int length)");
+    sb.AppendLine("public Span<byte> Slice(int start, int length)");
     sb.AppendLine("{");
     sb.AppendLine("var span = AsSpan();");
     sb.AppendLine("return span.Slice(start, length);");
     sb.AppendLine("}");
 
-    sb.AppendLine($"public Span<byte> this[Range range]");
+    sb.AppendLine("public Span<byte> this[Range range]");
     sb.AppendLine("{");
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine("get");
@@ -125,16 +126,16 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("return span[range];");
     sb.AppendLine("}");
     sb.AppendLine("}");
-    
+
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
 
     return sb.ToString();
   }
 
-  private static string BitConverterToTString(FieldInfo fieldInfo)
+  private static string BitConverterToTString(FieldInfo fieldInfo, Compilation compilation)
   {
-    var size = SizeOfType(fieldInfo.Type);
+    var size = SizeOfType(fieldInfo.Type, compilation);
     return size switch
     {
       0 =>
@@ -145,9 +146,9 @@ public static class SbBitConverterStructGenerator
     };
   }
 
-  private static string BitConverterToBytesString(FieldInfo fieldInfo)
+  private static string BitConverterToBytesString(FieldInfo fieldInfo, Compilation compilation)
   {
-    var size = SizeOfType(fieldInfo.Type);
+    var size = SizeOfType(fieldInfo.Type, compilation);
 
     return size switch
     {
