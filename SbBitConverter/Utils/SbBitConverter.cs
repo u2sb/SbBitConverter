@@ -134,7 +134,7 @@ public static class SbBitConverter
   public static double ApplyEndianness(this double source, bool useBigEndianMode = false)
   {
     var span = source.AsReadOnlyByteSpan();
-    return span.ToT<float>(useBigEndianMode);
+    return span.ToT<double>(useBigEndianMode);
   }
 
 #if NET8_0_OR_GREATER
@@ -289,7 +289,7 @@ public static class SbBitConverter
 
 #if NET8_0_OR_GREATER
   /// <summary>
-  ///   转换为long类型
+  ///   转换为 Int128 类型
   /// </summary>
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
@@ -303,7 +303,7 @@ public static class SbBitConverter
   }
 
   /// <summary>
-  ///   转换为 ulong 类型
+  ///   转换为 UInt128 类型
   /// </summary>
   /// <param name="data">数据</param>
   /// <param name="useBigEndianMode">是否使用大端模式</param>
