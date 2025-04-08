@@ -304,7 +304,7 @@ public readonly ref struct BitSpan
   {
     Span<byte> span = stackalloc byte[Unsafe.SizeOf<T>()];
     CopyTo(span, offset, length);
-    return Utils.SbBitConverter.ToT<T>(span, useBigEndianMode);
+    return Utils.BitConverter.ToT<T>(span, useBigEndianMode);
   }
 
   public void CopyTo(Span<byte> destination, int bitOffset, int bitCount)

@@ -11,7 +11,7 @@ namespace SbBitConverter.Utils;
 /// <summary>
 ///   转换类
 /// </summary>
-public static class SbBitConverter
+public static class BitConverter
 {
   #region 应用大小端
 
@@ -48,7 +48,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static short ApplyEndianness(this short source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -60,7 +60,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ushort ApplyEndianness(this ushort source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -72,7 +72,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static int ApplyEndianness(this int source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -84,7 +84,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static uint ApplyEndianness(this uint source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -96,7 +96,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static long ApplyEndianness(this long source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -108,7 +108,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ulong ApplyEndianness(this ulong source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -147,7 +147,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Int128 ApplyEndianness(this Int128 source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 
   /// <summary>
@@ -159,7 +159,7 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static UInt128 ApplyEndianness(this UInt128 source, bool useBigEndianMode = false)
   {
-    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
   }
 #endif
 
@@ -592,7 +592,7 @@ public static class SbBitConverter
       throw new ArgumentException("Data length must be even.");
 
     // 小端模式 初始为 DCBA
-    if (BitConverter.IsLittleEndian)
+    if (System.BitConverter.IsLittleEndian)
       switch (mode)
       {
         case BigAndSmallEndianEncodingMode.DCBA:
