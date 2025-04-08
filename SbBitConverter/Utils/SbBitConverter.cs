@@ -13,6 +13,160 @@ namespace SbBitConverter.Utils;
 /// </summary>
 public static class SbBitConverter
 {
+  #region 应用大小端
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static byte ApplyEndianness(this byte source, bool useBigEndianMode = false)
+  {
+    return source;
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static sbyte ApplyEndianness(this sbyte source, bool useBigEndianMode = false)
+  {
+    return source;
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static short ApplyEndianness(this short source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static ushort ApplyEndianness(this ushort source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static int ApplyEndianness(this int source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static uint ApplyEndianness(this uint source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static long ApplyEndianness(this long source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static ulong ApplyEndianness(this ulong source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static float ApplyEndianness(this float source, bool useBigEndianMode = false)
+  {
+    var span = source.AsReadOnlyByteSpan();
+    return span.ToT<float>(useBigEndianMode);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static double ApplyEndianness(this double source, bool useBigEndianMode = false)
+  {
+    var span = source.AsReadOnlyByteSpan();
+    return span.ToT<float>(useBigEndianMode);
+  }
+
+#if NET8_0_OR_GREATER
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static Int128 ApplyEndianness(this Int128 source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+
+  /// <summary>
+  ///   应用大小端
+  /// </summary>
+  /// <param name="source"></param>
+  /// <param name="useBigEndianMode"></param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static UInt128 ApplyEndianness(this UInt128 source, bool useBigEndianMode = false)
+  {
+    return BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+  }
+#endif
+
+  #endregion
+
+  #region 快速解释
+
   /// <summary>
   ///   转换为 short 类型
   /// </summary>
@@ -106,12 +260,12 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static float ToSingle(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
-#if NETSTANDARD
-    return ToT<float>(data, useBigEndianMode);
-#else
+#if NET6_0_OR_GREATER
     return useBigEndianMode
       ? BinaryPrimitives.ReadSingleBigEndian(data)
       : BinaryPrimitives.ReadSingleLittleEndian(data);
+#else
+    return ToT<float>(data, useBigEndianMode);
 #endif
   }
 
@@ -124,14 +278,47 @@ public static class SbBitConverter
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static double ToDouble(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
   {
-#if NETSTANDARD
-    return ToT<double>(data, useBigEndianMode);
-#else
+#if NET6_0_OR_GREATER
     return useBigEndianMode
       ? BinaryPrimitives.ReadDoubleBigEndian(data)
       : BinaryPrimitives.ReadDoubleLittleEndian(data);
+#else
+    return ToT<double>(data, useBigEndianMode);
 #endif
   }
+
+#if NET8_0_OR_GREATER
+  /// <summary>
+  ///   转换为long类型
+  /// </summary>
+  /// <param name="data">数据</param>
+  /// <param name="useBigEndianMode">是否使用大端模式</param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static Int128 ToInt128(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
+  {
+    return useBigEndianMode
+      ? BinaryPrimitives.ReadInt128BigEndian(data)
+      : BinaryPrimitives.ReadInt128LittleEndian(data);
+  }
+
+  /// <summary>
+  ///   转换为 ulong 类型
+  /// </summary>
+  /// <param name="data">数据</param>
+  /// <param name="useBigEndianMode">是否使用大端模式</param>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static UInt128 ToUInt128(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
+  {
+    return useBigEndianMode
+      ? BinaryPrimitives.ReadUInt128BigEndian(data)
+      : BinaryPrimitives.ReadUInt128LittleEndian(data);
+  }
+
+#endif
+
+  #endregion
 
   #region Memory转换
 
@@ -158,7 +345,7 @@ public static class SbBitConverter
   /// <typeparam name="TFrom"></typeparam>
   /// <typeparam name="TTo"></typeparam>
   /// <param name="memory"></param>
-  public sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> memory) : MemoryManager<TTo>
+  private sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> memory) : MemoryManager<TTo>
     where TFrom : unmanaged
     where TTo : unmanaged
   {
@@ -195,6 +382,30 @@ public static class SbBitConverter
   #endregion
 
   #region 通用类型转换
+
+  /// <summary>
+  ///   解释为为 ByteSpan
+  /// </summary>
+  /// <param name="source"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static Span<byte> AsByteSpan<T>(this T source) where T : unmanaged
+  {
+    return MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+  }
+
+  /// <summary>
+  ///   解释为为 ByteSpan
+  /// </summary>
+  /// <param name="source"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this T source) where T : unmanaged
+  {
+    return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+  }
 
   /// <summary>
   ///   转换到 byte[]
@@ -380,33 +591,56 @@ public static class SbBitConverter
     if (span.Length % 2 != 0)
       throw new ArgumentException("Data length must be even.");
 
-    switch (mode)
-    {
-      // 小端序模式（DCBA）
-      case BigAndSmallEndianEncodingMode.DCBA:
-        if (!BitConverter.IsLittleEndian) span.Reverse();
-        break;
+    // 小端模式 初始为 DCBA
+    if (BitConverter.IsLittleEndian)
+      switch (mode)
+      {
+        case BigAndSmallEndianEncodingMode.DCBA:
+          break;
+        case BigAndSmallEndianEncodingMode.ABCD:
+          span.Reverse();
+          break;
 
-      // 大端序模式（ABCD）
-      case BigAndSmallEndianEncodingMode.ABCD:
-        if (BitConverter.IsLittleEndian) span.Reverse();
-        break;
-      case BigAndSmallEndianEncodingMode.BADC:
-        // 二字节翻转，前后不翻转
-        var ushortSpan = MemoryMarshal.Cast<byte, ushort>(span);
-        foreach (ref var value in ushortSpan) value = BinaryPrimitives.ReverseEndianness(value);
-        if (!BitConverter.IsLittleEndian) span.Reverse();
-        break;
-      case BigAndSmallEndianEncodingMode.CDAB:
-        // 二字节不翻转，前后翻转
-        // 解释为ushort，然后整体翻转
-        var us = MemoryMarshal.Cast<byte, ushort>(span);
-        us.Reverse();
-        if (!BitConverter.IsLittleEndian) span.Reverse();
-        break;
-      default:
-        throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-    }
+        // 二字节翻转，前后不翻转 DCBA -> BADC
+        case BigAndSmallEndianEncodingMode.BADC:
+          // 解释为ushort，然后整体翻转
+          var us = MemoryMarshal.Cast<byte, ushort>(span);
+          us.Reverse();
+          break;
+
+        // 二字节不翻转，前后翻转 DCBA -> CDAB
+        case BigAndSmallEndianEncodingMode.CDAB:
+          var ushortSpan = MemoryMarshal.Cast<byte, ushort>(span);
+          foreach (ref var value in ushortSpan) value = BinaryPrimitives.ReverseEndianness(value);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+      }
+    // 大端模式 初始为 ABCD
+    else
+      switch (mode)
+      {
+        case BigAndSmallEndianEncodingMode.DCBA:
+          span.Reverse();
+          break;
+        case BigAndSmallEndianEncodingMode.ABCD:
+          break;
+
+        // 二字节翻转，前后不翻转 ABCD -> BADC
+        case BigAndSmallEndianEncodingMode.BADC:
+          var ushortSpan = MemoryMarshal.Cast<byte, ushort>(span);
+          foreach (ref var value in ushortSpan) value = BinaryPrimitives.ReverseEndianness(value);
+          break;
+
+        // 二字节不翻转，前后翻转 ABCD -> CDAB
+        case BigAndSmallEndianEncodingMode.CDAB:
+          // 解释为ushort，然后整体翻转
+          var us = MemoryMarshal.Cast<byte, ushort>(span);
+          us.Reverse();
+          break;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+      }
   }
 
   #endregion
