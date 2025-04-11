@@ -160,21 +160,9 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine($"public Span<{elementTypeName}> AsSpan()");
     sb.AppendLine("{");
-    if (isUnsafe)
-    {
-      sb.AppendLine("unsafe");
-      sb.AppendLine("{");
-      sb.AppendLine($"fixed ({elementTypeName}* p = source)");
-      sb.AppendLine("{");
-      sb.AppendLine($"return new Span<{elementTypeName}>(p, Length);");
-      sb.AppendLine("}");
-      sb.AppendLine("}");
-    }
-    else
-    {
-      sb.AppendLine(
-        $"return MemoryMarshal.Cast<{structName},{elementTypeName}>(MemoryMarshal.CreateSpan(ref this, 1));");
-    }
+
+    sb.AppendLine(
+      $"return MemoryMarshal.Cast<{structName},{elementTypeName}>(MemoryMarshal.CreateSpan(ref this, 1));");
 
     sb.AppendLine("}");
 

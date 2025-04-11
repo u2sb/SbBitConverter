@@ -93,21 +93,8 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine("public Span<byte> AsSpan()");
     sb.AppendLine("{");
-    if (isUnsafe)
-    {
-      sb.AppendLine("unsafe");
-      sb.AppendLine("{");
-      sb.AppendLine($"fixed ({structName}* p = &this)");
-      sb.AppendLine("{");
-      sb.AppendLine($"return new Span<byte>(p, Unsafe.SizeOf<{structName}>());");
-      sb.AppendLine("}");
-      sb.AppendLine("}");
-    }
-    else
-    {
-      sb.AppendLine("return MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref this, 1));");
-    }
-
+    sb.AppendLine(
+      $"return MemoryMarshal.CreateSpan(ref Unsafe.As<{structName}, byte>(ref this), Unsafe.SizeOf<{structName}>());");
     sb.AppendLine("}");
 
     sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");

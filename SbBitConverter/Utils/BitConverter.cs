@@ -390,7 +390,7 @@ public static class BitConverter
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Span<byte> AsByteSpan<T>(this T source) where T : unmanaged
+  public static Span<byte> AsByteSpan<T>(this ref T source) where T : unmanaged
   {
     return MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
   }
@@ -402,7 +402,7 @@ public static class BitConverter
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this T source) where T : unmanaged
+  public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this ref T source) where T : unmanaged
   {
     return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
   }
@@ -543,15 +543,9 @@ public static class BitConverter
     var size = Unsafe.SizeOf<T>();
     CheckLength(source, size);
 
-    unsafe
-    {
-      fixed (T* p = &destination)
-      {
-        var span = new Span<byte>(p, size);
-        source.CopyTo(span);
-        ApplyEndianness(span, mode);
-      }
-    }
+    var span = AsByteSpan(ref destination);
+    source.CopyTo(span);
+    ApplyEndianness(span, mode);
   }
 
   /// <summary>
@@ -570,15 +564,9 @@ public static class BitConverter
     var size = Unsafe.SizeOf<T>();
     CheckLength(source, size);
 
-    unsafe
-    {
-      fixed (T* p = &destination)
-      {
-        var span = new Span<byte>(p, size);
-        source.CopyTo(span);
-        ApplyEndianness(span, mode);
-      }
-    }
+    var span = AsByteSpan(ref destination);
+    source.CopyTo(span);
+    ApplyEndianness(span, mode);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
