@@ -4,9 +4,6 @@ using SbBitConverter.Attributes;
 
 namespace T0;
 
-#if UNSAFE
-#endif
-
 [SbBitConverterArray(typeof(float), 3, BigAndSmallEndianEncodingMode.ABCD)]
 public partial struct Float3
 {

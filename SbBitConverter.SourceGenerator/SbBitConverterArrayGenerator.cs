@@ -184,6 +184,7 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("}");
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
+    sb.AppendLine("#pragma warning restore");
     return sb.ToString();
   }
 

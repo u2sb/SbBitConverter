@@ -116,6 +116,7 @@ public static class SbBitConverterStructGenerator
 
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
+    sb.AppendLine("#pragma warning restore");
 
     return sb.ToString();
   }
