@@ -13,332 +13,750 @@ namespace SbBitConverter.Utils;
 /// </summary>
 public static class BitConverter
 {
-  #region 应用大小端
-
   /// <summary>
-  ///   应用大小端
+  ///   byte 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte ApplyEndianness(this byte source, bool useBigEndianMode = false)
+  extension(byte source)
   {
-    return source;
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public byte ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return source;
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   sbyte 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static sbyte ApplyEndianness(this sbyte source, bool useBigEndianMode = false)
+  extension(sbyte source)
   {
-    return source;
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public sbyte ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return source;
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   short 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static short ApplyEndianness(this short source, bool useBigEndianMode = false)
+  extension(short source)
   {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public short ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+
+  /// <summary>
+  ///   ushort 拓展
+  /// </summary>
+  extension(ushort source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ushort ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   int 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ushort ApplyEndianness(this ushort source, bool useBigEndianMode = false)
+  extension(int source)
   {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+
+  /// <summary>
+  ///   uint 拓展
+  /// </summary>
+  extension(uint source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public uint ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   long 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static int ApplyEndianness(this int source, bool useBigEndianMode = false)
+  extension(long source)
   {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public long ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   ulong 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static uint ApplyEndianness(this uint source, bool useBigEndianMode = false)
+  extension(ulong source)
   {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ulong ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   float 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static long ApplyEndianness(this long source, bool useBigEndianMode = false)
+  extension(float source)
   {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float ApplyEndianness(bool useBigEndianMode = false)
+    {
+      var span = source.AsReadOnlyByteSpan();
+      return span.ToT<float>(useBigEndianMode);
+    }
   }
 
   /// <summary>
-  ///   应用大小端
+  ///   double 拓展
   /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ulong ApplyEndianness(this ulong source, bool useBigEndianMode = false)
+  extension(double source)
   {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
-  }
-
-  /// <summary>
-  ///   应用大小端
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static float ApplyEndianness(this float source, bool useBigEndianMode = false)
-  {
-    var span = source.AsReadOnlyByteSpan();
-    return span.ToT<float>(useBigEndianMode);
-  }
-
-  /// <summary>
-  ///   应用大小端
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static double ApplyEndianness(this double source, bool useBigEndianMode = false)
-  {
-    var span = source.AsReadOnlyByteSpan();
-    return span.ToT<double>(useBigEndianMode);
-  }
-
-#if NET8_0_OR_GREATER
-  /// <summary>
-  ///   应用大小端
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Int128 ApplyEndianness(this Int128 source, bool useBigEndianMode = false)
-  {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
-  }
-
-  /// <summary>
-  ///   应用大小端
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="useBigEndianMode"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static UInt128 ApplyEndianness(this UInt128 source, bool useBigEndianMode = false)
-  {
-    return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
-  }
-#endif
-
-  #endregion
-
-  #region 快速解释
-
-  /// <summary>
-  ///   转换为 short 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static short ToInt16(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadInt16BigEndian(data)
-      : BinaryPrimitives.ReadInt16LittleEndian(data);
-  }
-
-  /// <summary>
-  ///   转换为 ushort 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ushort ToUInt16(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadUInt16BigEndian(data)
-      : BinaryPrimitives.ReadUInt16LittleEndian(data);
-  }
-
-  /// <summary>
-  ///   转换为 int 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static int ToInt32(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadInt32BigEndian(data)
-      : BinaryPrimitives.ReadInt32LittleEndian(data);
-  }
-
-  /// <summary>
-  ///   转换为 uint 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static uint ToUInt32(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadUInt32BigEndian(data)
-      : BinaryPrimitives.ReadUInt32LittleEndian(data);
-  }
-
-  /// <summary>
-  ///   转换为long类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static long ToInt64(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadInt64BigEndian(data)
-      : BinaryPrimitives.ReadInt64LittleEndian(data);
-  }
-
-  /// <summary>
-  ///   转换为 ulong 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ulong ToUInt64(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadUInt64BigEndian(data)
-      : BinaryPrimitives.ReadUInt64LittleEndian(data);
-  }
-
-  /// <summary>
-  ///   转换为 float 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static float ToSingle(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-#if NET6_0_OR_GREATER
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadSingleBigEndian(data)
-      : BinaryPrimitives.ReadSingleLittleEndian(data);
-#else
-    return ToT<float>(data, useBigEndianMode);
-#endif
-  }
-
-  /// <summary>
-  ///   转换为 double 类型
-  /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static double ToDouble(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
-  {
-#if NET6_0_OR_GREATER
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadDoubleBigEndian(data)
-      : BinaryPrimitives.ReadDoubleLittleEndian(data);
-#else
-    return ToT<double>(data, useBigEndianMode);
-#endif
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public double ApplyEndianness(bool useBigEndianMode = false)
+    {
+      var span = source.AsReadOnlyByteSpan();
+      return span.ToT<double>(useBigEndianMode);
+    }
   }
 
 #if NET8_0_OR_GREATER
+
   /// <summary>
-  ///   转换为 Int128 类型
+  ///   Int128 拓展
   /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Int128 ToInt128(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
+  extension(Int128 source)
   {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadInt128BigEndian(data)
-      : BinaryPrimitives.ReadInt128LittleEndian(data);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Int128 ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
   }
 
   /// <summary>
-  ///   转换为 UInt128 类型
+  ///   Int128 拓展
   /// </summary>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static UInt128 ToUInt128(ReadOnlySpan<byte> data, bool useBigEndianMode = false)
+  extension(UInt128 source)
   {
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadUInt128BigEndian(data)
-      : BinaryPrimitives.ReadUInt128LittleEndian(data);
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public UInt128 ApplyEndianness(bool useBigEndianMode = false)
+    {
+      return System.BitConverter.IsLittleEndian != useBigEndianMode ? source : BinaryPrimitives.ReverseEndianness(source);
+    }
   }
 
 #endif
 
-  #endregion
-
-  #region Memory转换
 
   /// <summary>
   ///   Memory 转换
   /// </summary>
-  /// <param name="memory"></param>
   /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <returns></returns>
-  public static Memory<TTo> Cast<TFrom, TTo>(this Memory<TFrom> memory)
-    where TFrom : unmanaged
-    where TTo : unmanaged
+  extension<TFrom>(Memory<TFrom> source) where TFrom : unmanaged
   {
-    if (typeof(TFrom) == typeof(TTo))
-      return (Memory<TTo>)(object)memory;
+    /// <summary>
+    ///   Memory 转换
+    /// </summary>
+    /// <typeparam name="TTo"></typeparam>
+    /// <returns></returns>
+    public Memory<TTo> Cast<TTo>()
+      where TTo : unmanaged
+    {
+      if (typeof(TFrom) == typeof(TTo))
+        return (Memory<TTo>)(object)source;
 
-    return new CastMemoryManager<TFrom, TTo>(memory).Memory;
+      return new CastMemoryManager<TFrom, TTo>(source).Memory;
+    }
   }
 
+  /// <summary>
+  ///   通用 转换
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
+  extension<T>(ref T source) where T : unmanaged
+  {
+    /// <summary>
+    ///   解释为为 ByteSpan
+    /// </summary>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> AsByteSpan()
+    {
+      return MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+    }
+
+    /// <summary>
+    ///   解释为为 ByteSpan
+    /// </summary>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<byte> AsReadOnlyByteSpan()
+    {
+      return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+    }
+  }
+
+  /// <summary>
+  ///   通用 转换
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
+  extension<T>(T source) where T : unmanaged
+  {
+    /// <summary>
+    ///   转换到 byte[]
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public byte[] ToByteArray(bool useBigEndianMode = false)
+    {
+      return ToByteArray(source,
+        useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
+    }
+
+    /// <summary>
+    ///   转换到 byte[]
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public byte[] ToByteArray(byte mode)
+    {
+      return ToByteArray(source, (BigAndSmallEndianEncodingMode)mode);
+    }
+
+    /// <summary>
+    ///   转换到 byte[]
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public byte[] ToByteArray(BigAndSmallEndianEncodingMode mode)
+    {
+      var size = Unsafe.SizeOf<T>();
+      var result = new byte[size];
+      WriteTo(source, result.AsSpan(), mode);
+      return result;
+    }
+
+    /// <summary>
+    ///   转换到 byte[]
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="mode"></param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteTo(Span<byte> destination, byte mode)
+    {
+      WriteTo(source, destination, (BigAndSmallEndianEncodingMode)mode);
+    }
+
+    /// <summary>
+    ///   转换到 byte[]
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="mode"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteTo(Span<byte> destination, BigAndSmallEndianEncodingMode mode)
+    {
+      var size = Unsafe.SizeOf<T>();
+      CheckLength(destination, size);
+
+      Unsafe.As<byte, T>(ref MemoryMarshal.GetReference(destination)) = source;
+
+      ApplyEndianness(destination[..size], mode);
+    }
+  }
+
+  /// <summary>
+  ///   ReadOnlySpan 拓展
+  /// </summary>
+  extension(ReadOnlySpan<byte> source)
+  {
+    /// <summary>
+    ///   转换为 short 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public short ToInt16(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt16BigEndian(source)
+        : BinaryPrimitives.ReadInt16LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 ushort 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ushort ToUInt16(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt16BigEndian(source)
+        : BinaryPrimitives.ReadUInt16LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 int 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int ToInt32(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt32BigEndian(source)
+        : BinaryPrimitives.ReadInt32LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 uint 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public uint ToUInt32(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt32BigEndian(source)
+        : BinaryPrimitives.ReadUInt32LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为long类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public long ToInt64(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt64BigEndian(source)
+        : BinaryPrimitives.ReadInt64LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 ulong 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ulong ToUInt64(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt64BigEndian(source)
+        : BinaryPrimitives.ReadUInt64LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 float 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float ToSingle(bool useBigEndianMode = false)
+    {
+#if NET6_0_OR_GREATER
+    return useBigEndianMode
+      ? BinaryPrimitives.ReadSingleBigEndian(source)
+      : BinaryPrimitives.ReadSingleLittleEndian(source);
+#else
+      return ToT<float>(source, useBigEndianMode);
+#endif
+    }
+
+    /// <summary>
+    ///   转换为 double 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public double ToDouble(bool useBigEndianMode = false)
+    {
+#if NET6_0_OR_GREATER
+    return useBigEndianMode
+      ? BinaryPrimitives.ReadDoubleBigEndian(source)
+      : BinaryPrimitives.ReadDoubleLittleEndian(source);
+#else
+      return ToT<double>(source, useBigEndianMode);
+#endif
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    ///   转换为 Int128 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Int128 ToInt128(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt128BigEndian(source)
+        : BinaryPrimitives.ReadInt128LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 UInt128 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public UInt128 ToUInt128(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt128BigEndian(source)
+        : BinaryPrimitives.ReadUInt128LittleEndian(source);
+    }
+
+#endif
+
+    /// <summary>
+    ///   转换到T
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T ToT<T>(bool useBigEndianMode = false) where T : unmanaged
+    {
+      return ToT<T>(source, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
+    }
+
+    /// <summary>
+    ///   转换到T
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T ToT<T>(byte mode) where T : unmanaged
+    {
+      return ToT<T>(source, (BigAndSmallEndianEncodingMode)mode);
+    }
+
+    /// <summary>
+    ///   转换到T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T ToT<T>(BigAndSmallEndianEncodingMode mode) where T : unmanaged
+    {
+      T value = default;
+      source.WriteTo(ref value, mode);
+      return value;
+    }
+
+    /// <summary>
+    ///   写入到 T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="mode"></param>
+    /// <param name="destination"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteTo<T>(ref T destination, BigAndSmallEndianEncodingMode mode) where T : unmanaged
+    {
+      var size = Unsafe.SizeOf<T>();
+      CheckLength(source, size);
+
+      var span = AsByteSpan(ref destination);
+      source.CopyTo(span);
+      ApplyEndianness(span, mode);
+    }
+  }
+
+  /// <summary>
+  ///   Span 拓展
+  /// </summary>
+  extension(Span<byte> source)
+  {
+    /// <summary>
+    ///   转换为 short 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public short ToInt16(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt16BigEndian(source)
+        : BinaryPrimitives.ReadInt16LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 ushort 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ushort ToUInt16(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt16BigEndian(source)
+        : BinaryPrimitives.ReadUInt16LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 int 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int ToInt32(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt32BigEndian(source)
+        : BinaryPrimitives.ReadInt32LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 uint 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public uint ToUInt32(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt32BigEndian(source)
+        : BinaryPrimitives.ReadUInt32LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为long类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public long ToInt64(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt64BigEndian(source)
+        : BinaryPrimitives.ReadInt64LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 ulong 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ulong ToUInt64(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt64BigEndian(source)
+        : BinaryPrimitives.ReadUInt64LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 float 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public float ToSingle(bool useBigEndianMode = false)
+    {
+#if NET6_0_OR_GREATER
+    return useBigEndianMode
+      ? BinaryPrimitives.ReadSingleBigEndian(source)
+      : BinaryPrimitives.ReadSingleLittleEndian(source);
+#else
+      return ToT<float>(source, useBigEndianMode);
+#endif
+    }
+
+    /// <summary>
+    ///   转换为 double 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public double ToDouble(bool useBigEndianMode = false)
+    {
+#if NET6_0_OR_GREATER
+    return useBigEndianMode
+      ? BinaryPrimitives.ReadDoubleBigEndian(source)
+      : BinaryPrimitives.ReadDoubleLittleEndian(source);
+#else
+      return ToT<double>(source, useBigEndianMode);
+#endif
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    ///   转换为 Int128 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Int128 ToInt128(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadInt128BigEndian(source)
+        : BinaryPrimitives.ReadInt128LittleEndian(source);
+    }
+
+    /// <summary>
+    ///   转换为 UInt128 类型
+    /// </summary>
+    /// <param name="useBigEndianMode">是否使用大端模式</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public UInt128 ToUInt128(bool useBigEndianMode = false)
+    {
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadUInt128BigEndian(source)
+        : BinaryPrimitives.ReadUInt128LittleEndian(source);
+    }
+
+#endif
+
+    /// <summary>
+    ///   转换到T
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T ToT<T>(bool useBigEndianMode = false) where T : unmanaged
+    {
+      return ToT<T>(source, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
+    }
+
+    /// <summary>
+    ///   转换到T
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T ToT<T>(byte mode) where T : unmanaged
+    {
+      return ToT<T>(source, (BigAndSmallEndianEncodingMode)mode);
+    }
+
+    /// <summary>
+    ///   转换到T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="mode"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T ToT<T>(BigAndSmallEndianEncodingMode mode) where T : unmanaged
+    {
+      T value = default;
+      source.WriteTo(ref value, mode);
+      return value;
+    }
+
+    /// <summary>
+    ///   写入到 T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="mode"></param>
+    /// <param name="destination"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void WriteTo<T>(ref T destination, BigAndSmallEndianEncodingMode mode) where T : unmanaged
+    {
+      var size = Unsafe.SizeOf<T>();
+      CheckLength(source, size);
+
+      var span = AsByteSpan(ref destination);
+      source.CopyTo(span);
+      ApplyEndianness(span, mode);
+    }
+  }
+
+  #region Memory转换
 
   /// <summary>
   /// </summary>
@@ -381,193 +799,7 @@ public static class BitConverter
 
   #endregion
 
-  #region 通用类型转换
-
-  /// <summary>
-  ///   解释为为 ByteSpan
-  /// </summary>
-  /// <param name="source"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static Span<byte> AsByteSpan<T>(this ref T source) where T : unmanaged
-  {
-    return MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
-  }
-
-  /// <summary>
-  ///   解释为为 ByteSpan
-  /// </summary>
-  /// <param name="source"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static ReadOnlySpan<byte> AsReadOnlyByteSpan<T>(this ref T source) where T : unmanaged
-  {
-    return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
-  }
-
-  /// <summary>
-  ///   转换到 byte[]
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="source">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte[] ToByteArray<T>(this T source, bool useBigEndianMode = false) where T : unmanaged
-  {
-    return ToByteArray(source,
-      useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
-  }
-
-  /// <summary>
-  ///   转换到 byte[]
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="mode"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte[] ToByteArray<T>(this T source, byte mode) where T : unmanaged
-  {
-    return ToByteArray(source, (BigAndSmallEndianEncodingMode)mode);
-  }
-
-  /// <summary>
-  ///   转换到 byte[]
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="mode"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static byte[] ToByteArray<T>(this T source, BigAndSmallEndianEncodingMode mode) where T : unmanaged
-  {
-    var size = Unsafe.SizeOf<T>();
-    var result = new byte[size];
-    WriteTo(source, result.AsSpan(), mode);
-    return result;
-  }
-
-  /// <summary>
-  ///   转换到 byte[]
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="destination"></param>
-  /// <param name="mode"></param>
-  /// <typeparam name="T"></typeparam>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void WriteTo<T>(this T source, Span<byte> destination, byte mode)
-    where T : unmanaged
-  {
-    WriteTo(source, destination, (BigAndSmallEndianEncodingMode)mode);
-  }
-
-  /// <summary>
-  ///   转换到 byte[]
-  /// </summary>
-  /// <param name="source"></param>
-  /// <param name="destination"></param>
-  /// <param name="mode"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <exception cref="ArgumentOutOfRangeException"></exception>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void WriteTo<T>(this T source, Span<byte> destination, BigAndSmallEndianEncodingMode mode)
-    where T : unmanaged
-  {
-    var size = Unsafe.SizeOf<T>();
-    CheckLength(destination, size);
-
-    Unsafe.As<byte, T>(ref MemoryMarshal.GetReference(destination)) = source;
-
-    ApplyEndianness(destination[..size], mode);
-  }
-
-  /// <summary>
-  ///   转换到T
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="data">数据</param>
-  /// <param name="useBigEndianMode">是否使用大端模式</param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static T ToT<T>(this ReadOnlySpan<byte> data, bool useBigEndianMode = false) where T : unmanaged
-  {
-    return ToT<T>(data, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
-  }
-
-  /// <summary>
-  ///   转换到T
-  /// </summary>
-  /// <param name="data"></param>
-  /// <param name="mode"></param>
-  /// <typeparam name="T"></typeparam>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static T ToT<T>(this ReadOnlySpan<byte> data, byte mode) where T : unmanaged
-  {
-    return ToT<T>(data, (BigAndSmallEndianEncodingMode)mode);
-  }
-
-  /// <summary>
-  ///   转换到T
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="data"></param>
-  /// <param name="mode"></param>
-  /// <returns></returns>
-  /// <exception cref="ArgumentException"></exception>
-  /// <exception cref="ArgumentOutOfRangeException"></exception>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static T ToT<T>(this ReadOnlySpan<byte> data, BigAndSmallEndianEncodingMode mode) where T : unmanaged
-  {
-    T value = default;
-    data.WriteTo(ref value, mode);
-    return value;
-  }
-
-  /// <summary>
-  ///   写入到 T
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="source"></param>
-  /// <param name="mode"></param>
-  /// <param name="destination"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void WriteTo<T>(this ReadOnlySpan<byte> source, ref T destination,
-    BigAndSmallEndianEncodingMode mode)
-    where T : unmanaged
-  {
-    var size = Unsafe.SizeOf<T>();
-    CheckLength(source, size);
-
-    var span = AsByteSpan(ref destination);
-    source.CopyTo(span);
-    ApplyEndianness(span, mode);
-  }
-
-  /// <summary>
-  ///   写入到 T
-  /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <param name="source"></param>
-  /// <param name="mode"></param>
-  /// <param name="destination"></param>
-  /// <returns></returns>
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public static void WriteTo<T>(this Span<byte> source, ref T destination,
-    BigAndSmallEndianEncodingMode mode)
-    where T : unmanaged
-  {
-    var size = Unsafe.SizeOf<T>();
-    CheckLength(source, size);
-
-    var span = AsByteSpan(ref destination);
-    source.CopyTo(span);
-    ApplyEndianness(span, mode);
-  }
+  #region 大小端转换
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   private static void ApplyEndianness(Span<byte> span, BigAndSmallEndianEncodingMode mode)
