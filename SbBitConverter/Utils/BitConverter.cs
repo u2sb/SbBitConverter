@@ -438,9 +438,9 @@ public static class BitConverter
     public float ToSingle(bool useBigEndianMode = false)
     {
 #if NET6_0_OR_GREATER
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadSingleBigEndian(source)
-      : BinaryPrimitives.ReadSingleLittleEndian(source);
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadSingleBigEndian(source)
+        : BinaryPrimitives.ReadSingleLittleEndian(source);
 #else
       return ToT<float>(source, useBigEndianMode);
 #endif
@@ -455,9 +455,9 @@ public static class BitConverter
     public double ToDouble(bool useBigEndianMode = false)
     {
 #if NET6_0_OR_GREATER
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadDoubleBigEndian(source)
-      : BinaryPrimitives.ReadDoubleLittleEndian(source);
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadDoubleBigEndian(source)
+        : BinaryPrimitives.ReadDoubleLittleEndian(source);
 #else
       return ToT<double>(source, useBigEndianMode);
 #endif
@@ -548,6 +548,22 @@ public static class BitConverter
       var span = AsByteSpan(ref destination);
       source.CopyTo(span);
       ApplyEndianness(span, mode);
+    }
+  }
+
+  /// <summary>
+  ///   ReadOnlySpan 拓展
+  /// </summary>
+  extension<T>(ReadOnlySpan<T> source) where T : unmanaged
+  {
+    /// <summary>
+    ///   解释为Span
+    /// </summary>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<T> AsSpan()
+    {
+      return MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(source), source.Length);
     }
   }
 
@@ -643,9 +659,9 @@ public static class BitConverter
     public float ToSingle(bool useBigEndianMode = false)
     {
 #if NET6_0_OR_GREATER
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadSingleBigEndian(source)
-      : BinaryPrimitives.ReadSingleLittleEndian(source);
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadSingleBigEndian(source)
+        : BinaryPrimitives.ReadSingleLittleEndian(source);
 #else
       return ToT<float>(source, useBigEndianMode);
 #endif
@@ -660,9 +676,9 @@ public static class BitConverter
     public double ToDouble(bool useBigEndianMode = false)
     {
 #if NET6_0_OR_GREATER
-    return useBigEndianMode
-      ? BinaryPrimitives.ReadDoubleBigEndian(source)
-      : BinaryPrimitives.ReadDoubleLittleEndian(source);
+      return useBigEndianMode
+        ? BinaryPrimitives.ReadDoubleBigEndian(source)
+        : BinaryPrimitives.ReadDoubleLittleEndian(source);
 #else
       return ToT<double>(source, useBigEndianMode);
 #endif
