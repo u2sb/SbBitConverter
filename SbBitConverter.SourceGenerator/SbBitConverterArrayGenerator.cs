@@ -47,141 +47,153 @@ public static class SbBitConverterArrayGenerator
     {
       sb.AppendLine($"unsafe partial struct {structName}");
       sb.AppendLine("{");
-      sb.Append("[FieldOffset(0)]");
-      sb.AppendLine($"public fixed {elementTypeName} source[{arrayInfo.Length}];");
+      sb.Append("  [FieldOffset(0)]");
+      sb.AppendLine($"  public fixed {elementTypeName} source[{arrayInfo.Length}];");
       sb.AppendLine("}");
     }
 
+    sb.AppendLine();
     sb.AppendLine(
       $"[StructLayout(LayoutKind.Explicit, Pack = {elementSize}, Size = {elementSize * arrayInfo.Length})]");
     sb.AppendLine($"partial struct {structName}");
     sb.AppendLine("{");
 
-    sb.AppendLine($"public {structName}(ReadOnlySpan<byte> data, byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("{");
-    sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine($"  public {structName}(ReadOnlySpan<byte> data, byte mode = {arrayInfo.Mode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       var offset = elementSize * i;
       var s0 = elementSize switch
       {
         0 =>
-          $"this._item{i} = new {elementTypeName}(data.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
+          $"    this._item{i} = new {elementTypeName}(data.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
         1 or 2 or 4 or 8 =>
-          $"this._item{i} = data[{offset}..{offset + elementSize}].ToT<{elementTypeName}>(mode);",
+          $"    this._item{i} = data[{offset}..{offset + elementSize}].ToT<{elementTypeName}>(mode);",
         _ => string.Empty
       };
       sb.AppendLine(s0);
     }
 
-    sb.AppendLine("}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine($"public {structName}(ReadOnlySpan<ushort> data0, byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("{");
-    sb.AppendLine("var data = MemoryMarshal.AsBytes(data0);");
-    sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine($"  public {structName}(ReadOnlySpan<ushort> data0, byte mode = {arrayInfo.Mode})");
+    sb.AppendLine("  {");
+    sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
+    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       var offset = elementSize * i;
       var s0 = elementSize switch
       {
         0 =>
-          $"this._item{i} = new {elementTypeName}(data.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
+          $"    this._item{i} = new {elementTypeName}(data.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
         1 or 2 or 4 or 8 =>
-          $"this._item{i} = data[{offset}..{offset + elementSize}].ToT<{elementTypeName}>(mode);",
+          $"    this._item{i} = data[{offset}..{offset + elementSize}].ToT<{elementTypeName}>(mode);",
         _ => string.Empty
       };
       sb.AppendLine(s0);
     }
 
-    sb.AppendLine("}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
     for (var i = 0; i < arrayInfo.Length; i++)
     {
-      sb.Append($"[FieldOffset({i * arrayInfo.ElementSize})]");
+      sb.Append($"  [FieldOffset({i * arrayInfo.ElementSize})]");
       sb.AppendLine($"private {elementTypeName} _item{i};");
+      sb.AppendLine();
     }
 
-    sb.AppendLine($"public byte[] ToByteArray(byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("{");
-    sb.AppendLine($"var data = new byte[Unsafe.SizeOf<{structName}>()];");
-    sb.AppendLine("var span = data.AsSpan();");
-    sb.AppendLine("WriteTo(span, mode);");
-    sb.AppendLine("return data;");
-    sb.AppendLine("}");
+    sb.AppendLine($"  public byte[] ToByteArray(byte mode = {arrayInfo.Mode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    var data = new byte[Unsafe.SizeOf<{structName}>()];");
+    sb.AppendLine("    var span = data.AsSpan();");
+    sb.AppendLine("    WriteTo(span, mode);");
+    sb.AppendLine("    return data;");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"public void WriteTo(Span<byte> span, byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("{");
-    sb.AppendLine($"CheckLength(span, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine($"  public void WriteTo(Span<byte> span, byte mode = {arrayInfo.Mode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    CheckLength(span, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       var offset = elementSize * i;
       var s0 = elementSize switch
       {
         0 =>
-          $"this._item{i}.WriteTo(span.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
+          $"    this._item{i}.WriteTo(span.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
         1 or 2 or 4 or 8 =>
-          $"this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);",
+          $"    this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);",
         _ => string.Empty
       };
       sb.AppendLine(s0);
     }
 
-    sb.AppendLine("}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine($"public int Length => {arrayInfo.Length};");
-    sb.AppendLine($"public {elementTypeName} this[int index]");
-    sb.AppendLine("{");
-    sb.AppendLine("get");
-    sb.AppendLine("{");
-    sb.AppendLine("return index switch {");
-    for (var i = 0; i < arrayInfo.Length; i++) sb.AppendLine($"{i} => _item{i},");
-    sb.AppendLine("_ => throw new IndexOutOfRangeException()");
-    sb.AppendLine("};");
-    sb.AppendLine("}");
-    sb.AppendLine("set");
-    sb.AppendLine("{");
-    sb.AppendLine("switch (index)");
-    sb.AppendLine("{");
+    sb.AppendLine($"  public int Length => {arrayInfo.Length};");
+    sb.AppendLine();
+
+    sb.AppendLine($"  public {elementTypeName} this[int index]");
+    sb.AppendLine("  {");
+    sb.AppendLine("    get");
+    sb.AppendLine("    {");
+    sb.AppendLine("      return index switch {");
+    for (var i = 0; i < arrayInfo.Length; i++) sb.AppendLine($"        {i} => _item{i},");
+    sb.AppendLine("        _ => throw new IndexOutOfRangeException()");
+    sb.AppendLine("      };");
+    sb.AppendLine("    }");
+    sb.AppendLine("    set");
+    sb.AppendLine("    {");
+    sb.AppendLine("      switch (index)");
+    sb.AppendLine("      {");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
-      sb.AppendLine($"case {i}:");
-      sb.AppendLine($"_item{i} = value;");
-      sb.AppendLine("break;");
+      sb.AppendLine($"        case {i}:");
+      sb.AppendLine($"          _item{i} = value;");
+      sb.AppendLine("        break;");
     }
 
-    sb.AppendLine("default:");
-    sb.AppendLine("throw new IndexOutOfRangeException();");
-    sb.AppendLine("}");
-    sb.AppendLine("}");
-    sb.AppendLine("}");
+    sb.AppendLine("        default:");
+    sb.AppendLine("          throw new IndexOutOfRangeException();");
+    sb.AppendLine("      }");
+    sb.AppendLine("    }");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"public Span<{elementTypeName}> AsSpan()");
-    sb.AppendLine("{");
+    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine($"  public Span<{elementTypeName}> AsSpan()");
+    sb.AppendLine("  {");
 
     sb.AppendLine(
-      $"return MemoryMarshal.Cast<{structName},{elementTypeName}>(MemoryMarshal.CreateSpan(ref this, 1));");
+      $"    return MemoryMarshal.CreateSpan(ref _item0, {arrayInfo.Length});");
 
-    sb.AppendLine("}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"public Span<{elementTypeName}> Slice(int start, int length)");
-    sb.AppendLine("{");
-    sb.AppendLine("var span = AsSpan();");
-    sb.AppendLine("return span.Slice(start, length);");
-    sb.AppendLine("}");
+    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine($"  public Span<{elementTypeName}> Slice(int start, int length)");
+    sb.AppendLine("  {");
+    sb.AppendLine("    var span = AsSpan();");
+    sb.AppendLine("    return span.Slice(start, length);");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine($"public Span<{elementTypeName}> this[Range range]");
-    sb.AppendLine("{");
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine("get");
-    sb.AppendLine("{");
-    sb.AppendLine("var span = AsSpan();");
-    sb.AppendLine("return span[range];");
-    sb.AppendLine("}");
-    sb.AppendLine("}");
+    sb.AppendLine($"  public Span<{elementTypeName}> this[Range range]");
+    sb.AppendLine("  {");
+    sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine("    get");
+    sb.AppendLine("    {");
+    sb.AppendLine("      var span = AsSpan();");
+    sb.AppendLine("      return span[range];");
+    sb.AppendLine("    }");
+    sb.AppendLine("  }");
+    sb.AppendLine();
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
     sb.AppendLine("#pragma warning restore");

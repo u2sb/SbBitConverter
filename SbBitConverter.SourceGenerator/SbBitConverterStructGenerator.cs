@@ -64,55 +64,37 @@ public static class SbBitConverterStructGenerator
 
     sb.AppendLine($"partial struct {structName}");
     sb.AppendLine("{");
-    sb.AppendLine($"public {structName}(ReadOnlySpan<byte> data, byte mode = {encodingMode})");
-    sb.AppendLine("{");
-    sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine($"  public {structName}(ReadOnlySpan<byte> data, byte mode = {encodingMode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toTStringBuilder}");
-    sb.AppendLine("}");
-    sb.AppendLine($"public {structName}(ReadOnlySpan<ushort> data0, byte mode = {encodingMode})");
-    sb.AppendLine("{");
-    sb.AppendLine("var data = MemoryMarshal.AsBytes(data0);");
-    sb.AppendLine($"CheckLength(data, Unsafe.SizeOf<{structName}>());");
-    sb.AppendLine($"{toTStringBuilder}");
-    sb.AppendLine("}");
-    sb.AppendLine($"public byte[] ToByteArray(byte mode = {encodingMode})");
-    sb.AppendLine("{");
-    sb.AppendLine($"var data = new byte[Unsafe.SizeOf<{structName}>()];");
-    sb.AppendLine("var span = data.AsSpan();");
-    sb.AppendLine("WriteTo(span, mode);");
-    sb.AppendLine("return data;");
-    sb.AppendLine("}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"public void WriteTo(Span<byte> span, byte mode = {encodingMode})");
-    sb.AppendLine("{");
-    sb.AppendLine($"CheckLength(span, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine($"  public {structName}(ReadOnlySpan<ushort> data0, byte mode = {encodingMode})");
+    sb.AppendLine("  {");
+    sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
+    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine($"{toTStringBuilder}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
+
+    sb.AppendLine($"  public byte[] ToByteArray(byte mode = {encodingMode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    var data = new byte[Unsafe.SizeOf<{structName}>()];");
+    sb.AppendLine("    var span = data.AsSpan();");
+    sb.AppendLine("    WriteTo(span, mode);");
+    sb.AppendLine("    return data;");
+    sb.AppendLine("  }");
+    sb.AppendLine();
+
+    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine($"  public void WriteTo(Span<byte> span, byte mode = {encodingMode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    CheckLength(span, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toBytesStringBuilder}");
-    sb.AppendLine("}");
-
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine("public Span<byte> AsSpan()");
-    sb.AppendLine("{");
-    sb.AppendLine(
-      $"return MemoryMarshal.CreateSpan(ref Unsafe.As<{structName}, byte>(ref this), Unsafe.SizeOf<{structName}>());");
-    sb.AppendLine("}");
-
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine("public Span<byte> Slice(int start, int length)");
-    sb.AppendLine("{");
-    sb.AppendLine("var span = AsSpan();");
-    sb.AppendLine("return span.Slice(start, length);");
-    sb.AppendLine("}");
-
-    sb.AppendLine("public Span<byte> this[Range range]");
-    sb.AppendLine("{");
-    sb.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine("get");
-    sb.AppendLine("{");
-    sb.AppendLine("var span = AsSpan();");
-    sb.AppendLine("return span[range];");
-    sb.AppendLine("}");
-    sb.AppendLine("}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
 
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
@@ -127,9 +109,9 @@ public static class SbBitConverterStructGenerator
     return size switch
     {
       0 =>
-        $"this.{fieldInfo.Name} = new {fieldInfo.Type.ToDisplayString()}(data.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
+        $"    this.{fieldInfo.Name} = new {fieldInfo.Type.ToDisplayString()}(data.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
       1 or 2 or 4 or 8 =>
-        $"this.{fieldInfo.Name} = data[{fieldInfo.Offset}..{fieldInfo.Offset + size}].ToT<{fieldInfo.Type.ToDisplayString()}>(mode);",
+        $"    this.{fieldInfo.Name} = data[{fieldInfo.Offset}..{fieldInfo.Offset + size}].ToT<{fieldInfo.Type.ToDisplayString()}>(mode);",
       _ => string.Empty
     };
   }
@@ -141,9 +123,9 @@ public static class SbBitConverterStructGenerator
     return size switch
     {
       0 =>
-        $"this.{fieldInfo.Name}.WriteTo(span.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
+        $"    this.{fieldInfo.Name}.WriteTo(span.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
       1 or 2 or 4 or 8 =>
-        $"this.{fieldInfo.Name}.WriteTo<{fieldInfo.Type.ToDisplayString()}>(span[{fieldInfo.Offset}..{fieldInfo.Offset + size}], mode);",
+        $"    this.{fieldInfo.Name}.WriteTo<{fieldInfo.Type.ToDisplayString()}>(span[{fieldInfo.Offset}..{fieldInfo.Offset + size}], mode);",
       _ => string.Empty
     };
   }
@@ -170,32 +152,32 @@ public static class SbBitConverterStructGenerator
       switch (member)
       {
         case IFieldSymbol { IsImplicitlyDeclared: false } field:
-        {
-          if (GetFieldOffset(field) is { } offset)
-            yield return new FieldInfo(
-              field.Name,
-              field.Type,
-              offset,
-              false);
-          break;
-        }
+          {
+            if (GetFieldOffset(field) is { } offset)
+              yield return new FieldInfo(
+                field.Name,
+                field.Type,
+                offset,
+                false);
+            break;
+          }
         case IPropertySymbol property:
-        {
-          var backingField = structSymbol
-            .GetMembers()
-            .OfType<IFieldSymbol>()
-            .FirstOrDefault(f =>
-              f.IsImplicitlyDeclared &&
-              f.AssociatedSymbol?.Equals(property, SymbolEqualityComparer.Default) == true);
+          {
+            var backingField = structSymbol
+              .GetMembers()
+              .OfType<IFieldSymbol>()
+              .FirstOrDefault(f =>
+                f.IsImplicitlyDeclared &&
+                f.AssociatedSymbol?.Equals(property, SymbolEqualityComparer.Default) == true);
 
-          if (backingField != null && GetFieldOffset(backingField) is { } offset)
-            yield return new FieldInfo(
-              property.Name,
-              property.Type,
-              offset,
-              true);
-          break;
-        }
+            if (backingField != null && GetFieldOffset(backingField) is { } offset)
+              yield return new FieldInfo(
+                property.Name,
+                property.Type,
+                offset,
+                true);
+            break;
+          }
       }
   }
 
