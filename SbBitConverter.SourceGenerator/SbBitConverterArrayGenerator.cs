@@ -28,6 +28,7 @@ public static class SbBitConverterArrayGenerator
     var namespaceName = structSymbol.ContainingNamespace.ToDisplayString();
     var elementTypeName = arrayInfo.ElementType.ToDisplayString();
     var elementSize = arrayInfo.ElementSize;
+    var hasStructLayoutAttribute = arrayInfo.HasStructLayoutAttribute;
 
     var sb = new StringBuilder();
     sb.AppendLine("// Auto-generated code");
@@ -53,8 +54,9 @@ public static class SbBitConverterArrayGenerator
     }
 
     sb.AppendLine();
-    sb.AppendLine(
-      $"[StructLayout(LayoutKind.Explicit, Pack = {elementSize}, Size = {elementSize * arrayInfo.Length})]");
+    if (!hasStructLayoutAttribute)
+      sb.AppendLine(
+        $"[StructLayout(LayoutKind.Explicit, Pack = {elementSize}, Size = {elementSize * arrayInfo.Length})]");
     sb.AppendLine($"partial struct {structName}");
     sb.AppendLine("{");
 
@@ -210,14 +212,18 @@ public static class SbBitConverterArrayGenerator
         && sbBitConverterAttr.ConstructorArguments[2].Value is byte mode)
     {
       var size = SizeOfType(type, compilation);
-      return new SbBitConverterArrayInfo(type, size, length, mode);
+
+      var structLayoutAttr = structSymbol.GetAttributes().Any(attr =>
+      attr.AttributeClass != null && attr.AttributeClass.ToDisplayString() == "System.Runtime.InteropServices.StructLayoutAttribute");
+
+      return new SbBitConverterArrayInfo(type, size, length, mode, structLayoutAttr);
     }
 
     return null;
   }
 }
 
-internal class SbBitConverterArrayInfo(INamedTypeSymbol elementType, int elementSize, int length, byte mode)
+internal class SbBitConverterArrayInfo(INamedTypeSymbol elementType, int elementSize, int length, byte mode, bool hasStructLayoutAttribute)
 {
   public INamedTypeSymbol ElementType { get; } = elementType;
 
@@ -225,4 +231,6 @@ internal class SbBitConverterArrayInfo(INamedTypeSymbol elementType, int element
   public int Length { get; } = length;
 
   public byte Mode { get; } = mode;
+
+  public bool HasStructLayoutAttribute { get; } = hasStructLayoutAttribute;
 }
