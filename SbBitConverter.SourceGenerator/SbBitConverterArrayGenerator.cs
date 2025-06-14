@@ -1,15 +1,13 @@
-using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using static SbBitConverter.SourceGenerator.ConstTable;
 using static SbBitConverter.SourceGenerator.Utils;
 
 namespace SbBitConverter.SourceGenerator;
 
 public static class SbBitConverterArrayGenerator
 {
-  private const string SbBitConverterArrayAttributeName = "SbBitConverter.Attributes.SbBitConverterArrayAttribute";
-
   public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe)
   {
     var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol, context.Compilation);
@@ -204,17 +202,16 @@ public static class SbBitConverterArrayGenerator
 
   private static SbBitConverterArrayInfo? GetSbBitConverterInfo(INamedTypeSymbol structSymbol, Compilation compilation)
   {
-    var sbBitConverterAttr = structSymbol.GetAttributes().FirstOrDefault(attr =>
-      attr.AttributeClass != null && attr.AttributeClass.ToDisplayString() == SbBitConverterArrayAttributeName);
+    var sbBitConverterAttr = structSymbol.GetAttribute(SbBitConverterArrayAttributeName);
 
     if (sbBitConverterAttr?.ConstructorArguments[0].Value is INamedTypeSymbol type &&
         sbBitConverterAttr.ConstructorArguments[1].Value is int length
         && sbBitConverterAttr.ConstructorArguments[2].Value is byte mode)
     {
-      var size = SizeOfType(type, compilation);
+      var size = sbBitConverterAttr.GetAttributeNamedArguments<int>("ElementSize");
+      if (size <= 0) size = SizeOfType(type, compilation);
 
-      var structLayoutAttr = structSymbol.GetAttributes().Any(attr =>
-      attr.AttributeClass != null && attr.AttributeClass.ToDisplayString() == "System.Runtime.InteropServices.StructLayoutAttribute");
+      var structLayoutAttr = structSymbol.ContainsAttribute(StructLayoutAttributeName);
 
       return new SbBitConverterArrayInfo(type, size, length, mode, structLayoutAttr);
     }
@@ -223,11 +220,17 @@ public static class SbBitConverterArrayGenerator
   }
 }
 
-internal class SbBitConverterArrayInfo(INamedTypeSymbol elementType, int elementSize, int length, byte mode, bool hasStructLayoutAttribute)
+internal class SbBitConverterArrayInfo(
+  INamedTypeSymbol elementType,
+  int elementSize,
+  int length,
+  byte mode,
+  bool hasStructLayoutAttribute)
 {
   public INamedTypeSymbol ElementType { get; } = elementType;
 
   public int ElementSize { get; } = elementSize;
+
   public int Length { get; } = length;
 
   public byte Mode { get; } = mode;

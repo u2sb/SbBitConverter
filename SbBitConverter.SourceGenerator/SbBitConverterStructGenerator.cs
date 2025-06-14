@@ -3,20 +3,16 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using static SbBitConverter.SourceGenerator.ConstTable;
 using static SbBitConverter.SourceGenerator.Utils;
 
 namespace SbBitConverter.SourceGenerator;
 
 public static class SbBitConverterStructGenerator
 {
-  private const string SbBitConverterStructAttributeName = "SbBitConverter.Attributes.SbBitConverterStructAttribute";
-  private const string FieldOffsetAttributeName = "System.Runtime.InteropServices.FieldOffsetAttribute";
-
-
   public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe)
   {
-    var sbBitConverterAttr = structSymbol.GetAttributes().FirstOrDefault(attr =>
-      attr.AttributeClass != null && attr.AttributeClass.ToDisplayString() == SbBitConverterStructAttributeName);
+    var sbBitConverterAttr = structSymbol.GetAttribute(SbBitConverterStructAttributeName);
 
     if (sbBitConverterAttr == null) return;
 
@@ -152,43 +148,39 @@ public static class SbBitConverterStructGenerator
       switch (member)
       {
         case IFieldSymbol { IsImplicitlyDeclared: false } field:
-          {
-            if (GetFieldOffset(field) is { } offset)
-              yield return new FieldInfo(
-                field.Name,
-                field.Type,
-                offset,
-                false);
-            break;
-          }
+        {
+          if (GetFieldOffset(field) is { } offset)
+            yield return new FieldInfo(
+              field.Name,
+              field.Type,
+              offset,
+              false);
+          break;
+        }
         case IPropertySymbol property:
-          {
-            var backingField = structSymbol
-              .GetMembers()
-              .OfType<IFieldSymbol>()
-              .FirstOrDefault(f =>
-                f.IsImplicitlyDeclared &&
-                f.AssociatedSymbol?.Equals(property, SymbolEqualityComparer.Default) == true);
+        {
+          var backingField = structSymbol
+            .GetMembers()
+            .OfType<IFieldSymbol>()
+            .FirstOrDefault(f =>
+              f.IsImplicitlyDeclared &&
+              f.AssociatedSymbol?.Equals(property, SymbolEqualityComparer.Default) == true);
 
-            if (backingField != null && GetFieldOffset(backingField) is { } offset)
-              yield return new FieldInfo(
-                property.Name,
-                property.Type,
-                offset,
-                true);
-            break;
-          }
+          if (backingField != null && GetFieldOffset(backingField) is { } offset)
+            yield return new FieldInfo(
+              property.Name,
+              property.Type,
+              offset,
+              true);
+          break;
+        }
       }
   }
 
   private static int? GetFieldOffset(IFieldSymbol field)
   {
-    if (field.GetAttributes().FirstOrDefault(attr =>
-          attr.AttributeClass != null &&
-          attr.AttributeClass.ToDisplayString() == FieldOffsetAttributeName) is { } attr1)
-      return attr1.ConstructorArguments[0].Value as int?;
-
-    return null;
+    var attr1 = field.GetAttribute(FieldOffsetAttributeName);
+    return attr1?.ConstructorArguments[0].Value as int?;
   }
 }
 

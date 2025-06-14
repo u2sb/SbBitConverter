@@ -28,9 +28,14 @@ namespace SbBitConverter.Attributes
     public Type ElementType { get; }
 
     /// <summary>
-    ///   长度
+    ///   元素数量
     /// </summary>
     public int Length { get; }
+
+    /// <summary>
+    ///   元素长度
+    /// </summary>
+    public int ElementSize { get; set; } = 0;
 
     /// <summary>
     ///   内存布局方式
