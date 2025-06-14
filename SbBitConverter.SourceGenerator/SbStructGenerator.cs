@@ -14,7 +14,6 @@ public class SbStructGenerator : ISourceGenerator
     context.RegisterForSyntaxNotifications(() => new SbBitConverterStructSyntaxReceiver());
   }
 
-
   public void Execute(GeneratorExecutionContext context)
   {
     if (context.SyntaxReceiver is not SbBitConverterStructSyntaxReceiver receiver) return;

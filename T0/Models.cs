@@ -4,7 +4,7 @@ using SbBitConverter.Attributes;
 
 namespace T0;
 
-[SbBitConverterArray(typeof(float), 3, BigAndSmallEndianEncodingMode.ABCD, ElementSize = sizeof(float))]
+[SbBitConverterArray(typeof(float), 3, BigAndSmallEndianEncodingMode.ABCD)]
 public partial struct Float3
 {
 }

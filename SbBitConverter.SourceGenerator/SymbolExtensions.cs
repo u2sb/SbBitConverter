@@ -31,7 +31,11 @@ internal static class SymbolExtensions
 
   public static T? GetAttributeNamedArguments<T>(this AttributeData attributeData, string name)
   {
-    return (T?)attributeData.NamedArguments.FirstOrDefault(w => w.Key == name).Value.Value;
+    foreach (var argument in attributeData.NamedArguments)
+      if (argument.Key == name)
+        return (T?)argument.Value.Value;
+
+    return default;
   }
 
   public static AttributeData? GetImplAttribute(this ISymbol symbol, INamedTypeSymbol implAttribtue)
@@ -41,11 +45,7 @@ internal static class SymbolExtensions
       if (x.AttributeClass == null) return false;
       if (x.AttributeClass.EqualsUnconstructedGenericType(implAttribtue)) return true;
 
-      foreach (var item in x.AttributeClass.GetAllBaseTypes())
-        if (item.EqualsUnconstructedGenericType(implAttribtue))
-          return true;
-
-      return false;
+      return x.AttributeClass.GetAllBaseTypes().Any(item => item.EqualsUnconstructedGenericType(implAttribtue));
     });
   }
 

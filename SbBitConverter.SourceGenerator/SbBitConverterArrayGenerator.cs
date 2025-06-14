@@ -208,7 +208,7 @@ public static class SbBitConverterArrayGenerator
         sbBitConverterAttr.ConstructorArguments[1].Value is int length
         && sbBitConverterAttr.ConstructorArguments[2].Value is byte mode)
     {
-      var size = sbBitConverterAttr.GetAttributeNamedArguments<int>("ElementSize");
+      var size = sbBitConverterAttr.GetAttributeNamedArguments<int?>("ElementSize") ?? 0;
       if (size <= 0) size = SizeOfType(type, compilation);
 
       var structLayoutAttr = structSymbol.ContainsAttribute(StructLayoutAttributeName);
