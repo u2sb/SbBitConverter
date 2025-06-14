@@ -81,7 +81,7 @@ public static class BitConverter
   /// <summary>
   ///   byte 拓展
   /// </summary>
-  extension(ref byte source)
+  extension(byte source)
   {
     /// <summary>
     ///   应用大小端
@@ -98,7 +98,7 @@ public static class BitConverter
   /// <summary>
   ///   sbyte 拓展
   /// </summary>
-  extension(ref sbyte source)
+  extension(sbyte source)
   {
     /// <summary>
     ///   应用大小端
@@ -115,7 +115,7 @@ public static class BitConverter
   /// <summary>
   ///   short 拓展
   /// </summary>
-  extension(ref short source)
+  extension(short source)
   {
     /// <summary>
     ///   应用大小端
@@ -135,7 +135,7 @@ public static class BitConverter
   /// <summary>
   ///   ushort 拓展
   /// </summary>
-  extension(ref ushort source)
+  extension(ushort source)
   {
     /// <summary>
     ///   应用大小端
@@ -154,7 +154,7 @@ public static class BitConverter
   /// <summary>
   ///   int 拓展
   /// </summary>
-  extension(ref int source)
+  extension(int source)
   {
     /// <summary>
     ///   应用大小端
@@ -174,7 +174,7 @@ public static class BitConverter
   /// <summary>
   ///   uint 拓展
   /// </summary>
-  extension(ref uint source)
+  extension(uint source)
   {
     /// <summary>
     ///   应用大小端
@@ -193,7 +193,7 @@ public static class BitConverter
   /// <summary>
   ///   long 拓展
   /// </summary>
-  extension(ref long source)
+  extension(long source)
   {
     /// <summary>
     ///   应用大小端
@@ -212,7 +212,7 @@ public static class BitConverter
   /// <summary>
   ///   ulong 拓展
   /// </summary>
-  extension(ref ulong source)
+  extension(ulong source)
   {
     /// <summary>
     ///   应用大小端
@@ -231,7 +231,7 @@ public static class BitConverter
   /// <summary>
   ///   float 拓展
   /// </summary>
-  extension(ref float source)
+  extension(float source)
   {
     /// <summary>
     ///   应用大小端
@@ -249,7 +249,7 @@ public static class BitConverter
   /// <summary>
   ///   double 拓展
   /// </summary>
-  extension(ref double source)
+  extension(double source)
   {
     /// <summary>
     ///   应用大小端
@@ -317,7 +317,7 @@ public static class BitConverter
   ///   通用 转换
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  extension<T>(ref T source) where T : unmanaged
+  extension<T>(T source) where T : unmanaged
   {
     /// <summary>
     ///   转换到 byte[]
@@ -327,7 +327,7 @@ public static class BitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] ToByteArray(bool useBigEndianMode = false)
     {
-      return ToByteArray(ref source,
+      return ToByteArray(source,
         useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
     }
 
@@ -339,7 +339,7 @@ public static class BitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] ToByteArray(byte mode)
     {
-      return ToByteArray(ref source, (BigAndSmallEndianEncodingMode)mode);
+      return ToByteArray(source, (BigAndSmallEndianEncodingMode)mode);
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public static class BitConverter
     {
       var size = Unsafe.SizeOf<T>();
       var result = new byte[size];
-      WriteTo(ref source, result.AsSpan(), mode);
+      WriteTo(source, result.AsSpan(), mode);
       return result;
     }
 
@@ -364,7 +364,7 @@ public static class BitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteTo(in Span<byte> destination, byte mode)
     {
-      WriteTo(ref source, destination, (BigAndSmallEndianEncodingMode)mode);
+      WriteTo(source, destination, (BigAndSmallEndianEncodingMode)mode);
     }
 
     /// <summary>
@@ -853,7 +853,7 @@ public static class BitConverter
   /// <summary>
   ///   Int128 拓展
   /// </summary>
-  extension(ref Int128 source)
+  extension(Int128 source)
   {
     /// <summary>
     ///   应用大小端
@@ -872,7 +872,7 @@ public static class BitConverter
   /// <summary>
   ///   Int128 拓展
   /// </summary>
-  extension(ref UInt128 source)
+  extension(UInt128 source)
   {
     /// <summary>
     ///   应用大小端
