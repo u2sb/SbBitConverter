@@ -167,6 +167,170 @@ public partial struct ByteArray32
 
 #endregion
 
+#region SByteArray
+
+[SbBitConverterArray(typeof(sbyte), 1)]
+public partial struct SByteArray1
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 2)]
+public partial struct SByteArray2
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 3)]
+public partial struct SByteArray3
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 4)]
+public partial struct SByteArray4
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 5)]
+public partial struct SByteArray5
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 6)]
+public partial struct SByteArray6
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 7)]
+public partial struct SByteArray7
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 8)]
+public partial struct SByteArray8
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 9)]
+public partial struct SByteArray9
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 10)]
+public partial struct SByteArray10
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 11)]
+public partial struct SByteArray11
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 12)]
+public partial struct SByteArray12
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 13)]
+public partial struct SByteArray13
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 14)]
+public partial struct SByteArray14
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 15)]
+public partial struct SByteArray15
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 16)]
+public partial struct SByteArray16
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 17)]
+public partial struct SByteArray17
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 18)]
+public partial struct SByteArray18
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 19)]
+public partial struct SByteArray19
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 20)]
+public partial struct SByteArray20
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 21)]
+public partial struct SByteArray21
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 22)]
+public partial struct SByteArray22
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 23)]
+public partial struct SByteArray23
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 24)]
+public partial struct SByteArray24
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 25)]
+public partial struct SByteArray25
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 26)]
+public partial struct SByteArray26
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 27)]
+public partial struct SByteArray27
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 28)]
+public partial struct SByteArray28
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 29)]
+public partial struct SByteArray29
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 30)]
+public partial struct SByteArray30
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 31)]
+public partial struct SByteArray31
+{
+}
+
+[SbBitConverterArray(typeof(sbyte), 32)]
+public partial struct SByteArray32
+{
+}
+
+#endregion
+
 #region UInt16
 
 [SbBitConverterArray(typeof(ushort), 1)]
@@ -326,6 +490,170 @@ public partial struct UInt16Array31
 
 [SbBitConverterArray(typeof(ushort), 32)]
 public partial struct UInt16Array32
+{
+}
+
+#endregion
+
+#region Int16
+
+[SbBitConverterArray(typeof(short), 1)]
+public partial struct Int16Array1
+{
+}
+
+[SbBitConverterArray(typeof(short), 2)]
+public partial struct Int16Array2
+{
+}
+
+[SbBitConverterArray(typeof(short), 3)]
+public partial struct Int16Array3
+{
+}
+
+[SbBitConverterArray(typeof(short), 4)]
+public partial struct Int16Array4
+{
+}
+
+[SbBitConverterArray(typeof(short), 5)]
+public partial struct Int16Array5
+{
+}
+
+[SbBitConverterArray(typeof(short), 6)]
+public partial struct Int16Array6
+{
+}
+
+[SbBitConverterArray(typeof(short), 7)]
+public partial struct Int16Array7
+{
+}
+
+[SbBitConverterArray(typeof(short), 8)]
+public partial struct Int16Array8
+{
+}
+
+[SbBitConverterArray(typeof(short), 9)]
+public partial struct Int16Array9
+{
+}
+
+[SbBitConverterArray(typeof(short), 10)]
+public partial struct Int16Array10
+{
+}
+
+[SbBitConverterArray(typeof(short), 11)]
+public partial struct Int16Array11
+{
+}
+
+[SbBitConverterArray(typeof(short), 12)]
+public partial struct Int16Array12
+{
+}
+
+[SbBitConverterArray(typeof(short), 13)]
+public partial struct Int16Array13
+{
+}
+
+[SbBitConverterArray(typeof(short), 14)]
+public partial struct Int16Array14
+{
+}
+
+[SbBitConverterArray(typeof(short), 15)]
+public partial struct Int16Array15
+{
+}
+
+[SbBitConverterArray(typeof(short), 16)]
+public partial struct Int16Array16
+{
+}
+
+[SbBitConverterArray(typeof(short), 17)]
+public partial struct Int16Array17
+{
+}
+
+[SbBitConverterArray(typeof(short), 18)]
+public partial struct Int16Array18
+{
+}
+
+[SbBitConverterArray(typeof(short), 19)]
+public partial struct Int16Array19
+{
+}
+
+[SbBitConverterArray(typeof(short), 20)]
+public partial struct Int16Array20
+{
+}
+
+[SbBitConverterArray(typeof(short), 21)]
+public partial struct Int16Array21
+{
+}
+
+[SbBitConverterArray(typeof(short), 22)]
+public partial struct Int16Array22
+{
+}
+
+[SbBitConverterArray(typeof(short), 23)]
+public partial struct Int16Array23
+{
+}
+
+[SbBitConverterArray(typeof(short), 24)]
+public partial struct Int16Array24
+{
+}
+
+[SbBitConverterArray(typeof(short), 25)]
+public partial struct Int16Array25
+{
+}
+
+[SbBitConverterArray(typeof(short), 26)]
+public partial struct Int16Array26
+{
+}
+
+[SbBitConverterArray(typeof(short), 27)]
+public partial struct Int16Array27
+{
+}
+
+[SbBitConverterArray(typeof(short), 28)]
+public partial struct Int16Array28
+{
+}
+
+[SbBitConverterArray(typeof(short), 29)]
+public partial struct Int16Array29
+{
+}
+
+[SbBitConverterArray(typeof(short), 30)]
+public partial struct Int16Array30
+{
+}
+
+[SbBitConverterArray(typeof(short), 31)]
+public partial struct Int16Array31
+{
+}
+
+[SbBitConverterArray(typeof(short), 32)]
+public partial struct Int16Array32
 {
 }
 
@@ -495,6 +823,170 @@ public partial struct UInt32Array32
 
 #endregion
 
+#region Int32
+
+[SbBitConverterArray(typeof(int), 1)]
+public partial struct Int32Array1
+{
+}
+
+[SbBitConverterArray(typeof(int), 2)]
+public partial struct Int32Array2
+{
+}
+
+[SbBitConverterArray(typeof(int), 3)]
+public partial struct Int32Array3
+{
+}
+
+[SbBitConverterArray(typeof(int), 4)]
+public partial struct Int32Array4
+{
+}
+
+[SbBitConverterArray(typeof(int), 5)]
+public partial struct Int32Array5
+{
+}
+
+[SbBitConverterArray(typeof(int), 6)]
+public partial struct Int32Array6
+{
+}
+
+[SbBitConverterArray(typeof(int), 7)]
+public partial struct Int32Array7
+{
+}
+
+[SbBitConverterArray(typeof(int), 8)]
+public partial struct Int32Array8
+{
+}
+
+[SbBitConverterArray(typeof(int), 9)]
+public partial struct Int32Array9
+{
+}
+
+[SbBitConverterArray(typeof(int), 10)]
+public partial struct Int32Array10
+{
+}
+
+[SbBitConverterArray(typeof(int), 11)]
+public partial struct Int32Array11
+{
+}
+
+[SbBitConverterArray(typeof(int), 12)]
+public partial struct Int32Array12
+{
+}
+
+[SbBitConverterArray(typeof(int), 13)]
+public partial struct Int32Array13
+{
+}
+
+[SbBitConverterArray(typeof(int), 14)]
+public partial struct Int32Array14
+{
+}
+
+[SbBitConverterArray(typeof(int), 15)]
+public partial struct Int32Array15
+{
+}
+
+[SbBitConverterArray(typeof(int), 16)]
+public partial struct Int32Array16
+{
+}
+
+[SbBitConverterArray(typeof(int), 17)]
+public partial struct Int32Array17
+{
+}
+
+[SbBitConverterArray(typeof(int), 18)]
+public partial struct Int32Array18
+{
+}
+
+[SbBitConverterArray(typeof(int), 19)]
+public partial struct Int32Array19
+{
+}
+
+[SbBitConverterArray(typeof(int), 20)]
+public partial struct Int32Array20
+{
+}
+
+[SbBitConverterArray(typeof(int), 21)]
+public partial struct Int32Array21
+{
+}
+
+[SbBitConverterArray(typeof(int), 22)]
+public partial struct Int32Array22
+{
+}
+
+[SbBitConverterArray(typeof(int), 23)]
+public partial struct Int32Array23
+{
+}
+
+[SbBitConverterArray(typeof(int), 24)]
+public partial struct Int32Array24
+{
+}
+
+[SbBitConverterArray(typeof(int), 25)]
+public partial struct Int32Array25
+{
+}
+
+[SbBitConverterArray(typeof(int), 26)]
+public partial struct Int32Array26
+{
+}
+
+[SbBitConverterArray(typeof(int), 27)]
+public partial struct Int32Array27
+{
+}
+
+[SbBitConverterArray(typeof(int), 28)]
+public partial struct Int32Array28
+{
+}
+
+[SbBitConverterArray(typeof(int), 29)]
+public partial struct Int32Array29
+{
+}
+
+[SbBitConverterArray(typeof(int), 30)]
+public partial struct Int32Array30
+{
+}
+
+[SbBitConverterArray(typeof(int), 31)]
+public partial struct Int32Array31
+{
+}
+
+[SbBitConverterArray(typeof(int), 32)]
+public partial struct Int32Array32
+{
+}
+
+#endregion
+
 #region UInt64
 
 [SbBitConverterArray(typeof(ulong), 1)]
@@ -654,6 +1146,170 @@ public partial struct UInt64Array31
 
 [SbBitConverterArray(typeof(ulong), 32)]
 public partial struct UInt64Array32
+{
+}
+
+#endregion
+
+#region Int64
+
+[SbBitConverterArray(typeof(long), 1)]
+public partial struct Int64Array1
+{
+}
+
+[SbBitConverterArray(typeof(long), 2)]
+public partial struct Int64Array2
+{
+}
+
+[SbBitConverterArray(typeof(long), 3)]
+public partial struct Int64Array3
+{
+}
+
+[SbBitConverterArray(typeof(long), 4)]
+public partial struct Int64Array4
+{
+}
+
+[SbBitConverterArray(typeof(long), 5)]
+public partial struct Int64Array5
+{
+}
+
+[SbBitConverterArray(typeof(long), 6)]
+public partial struct Int64Array6
+{
+}
+
+[SbBitConverterArray(typeof(long), 7)]
+public partial struct Int64Array7
+{
+}
+
+[SbBitConverterArray(typeof(long), 8)]
+public partial struct Int64Array8
+{
+}
+
+[SbBitConverterArray(typeof(long), 9)]
+public partial struct Int64Array9
+{
+}
+
+[SbBitConverterArray(typeof(long), 10)]
+public partial struct Int64Array10
+{
+}
+
+[SbBitConverterArray(typeof(long), 11)]
+public partial struct Int64Array11
+{
+}
+
+[SbBitConverterArray(typeof(long), 12)]
+public partial struct Int64Array12
+{
+}
+
+[SbBitConverterArray(typeof(long), 13)]
+public partial struct Int64Array13
+{
+}
+
+[SbBitConverterArray(typeof(long), 14)]
+public partial struct Int64Array14
+{
+}
+
+[SbBitConverterArray(typeof(long), 15)]
+public partial struct Int64Array15
+{
+}
+
+[SbBitConverterArray(typeof(long), 16)]
+public partial struct Int64Array16
+{
+}
+
+[SbBitConverterArray(typeof(long), 17)]
+public partial struct Int64Array17
+{
+}
+
+[SbBitConverterArray(typeof(long), 18)]
+public partial struct Int64Array18
+{
+}
+
+[SbBitConverterArray(typeof(long), 19)]
+public partial struct Int64Array19
+{
+}
+
+[SbBitConverterArray(typeof(long), 20)]
+public partial struct Int64Array20
+{
+}
+
+[SbBitConverterArray(typeof(long), 21)]
+public partial struct Int64Array21
+{
+}
+
+[SbBitConverterArray(typeof(long), 22)]
+public partial struct Int64Array22
+{
+}
+
+[SbBitConverterArray(typeof(long), 23)]
+public partial struct Int64Array23
+{
+}
+
+[SbBitConverterArray(typeof(long), 24)]
+public partial struct Int64Array24
+{
+}
+
+[SbBitConverterArray(typeof(long), 25)]
+public partial struct Int64Array25
+{
+}
+
+[SbBitConverterArray(typeof(long), 26)]
+public partial struct Int64Array26
+{
+}
+
+[SbBitConverterArray(typeof(long), 27)]
+public partial struct Int64Array27
+{
+}
+
+[SbBitConverterArray(typeof(long), 28)]
+public partial struct Int64Array28
+{
+}
+
+[SbBitConverterArray(typeof(long), 29)]
+public partial struct Int64Array29
+{
+}
+
+[SbBitConverterArray(typeof(long), 30)]
+public partial struct Int64Array30
+{
+}
+
+[SbBitConverterArray(typeof(long), 31)]
+public partial struct Int64Array31
+{
+}
+
+[SbBitConverterArray(typeof(long), 32)]
+public partial struct Int64Array32
 {
 }
 
