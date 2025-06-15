@@ -149,14 +149,7 @@ public static class SbBitConverterArrayGenerator
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       var offset = elementSize * i;
-      var s0 = elementSize switch
-      {
-        0 =>
-          $"    this._item{i}.WriteTo(span.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
-        1 or 2 or 4 or 8 =>
-          $"    this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);",
-        _ => string.Empty
-      };
+      var s0 = $"    this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);";
       sb.AppendLine(s0);
     }
 
@@ -172,14 +165,7 @@ public static class SbBitConverterArrayGenerator
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       var offset = elementSize * i;
-      var s0 = elementSize switch
-      {
-        0 =>
-          $"    this._item{i}.WriteTo(span.Slice({offset}, Unsafe.SizeOf<{elementTypeName}>()), mode);",
-        1 or 2 or 4 or 8 =>
-          $"    this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);",
-        _ => string.Empty
-      };
+      var s0 = $"    this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);";
       sb.AppendLine(s0);
     }
 
