@@ -6,5 +6,6 @@ internal static class ConstTable
   public const string FieldOffsetAttributeName = "System.Runtime.InteropServices.FieldOffsetAttribute";
   public const string SbBitConverterArrayAttributeName = "SbBitConverter.Attributes.SbBitConverterArrayAttribute";
   public const string SbBitConverterStructAttributeName = "SbBitConverter.Attributes.SbBitConverterStructAttribute";
-  
+
+  public const string BigAndSmallEndianEncodingModeEnum = "SbBitConverter.Attributes.BigAndSmallEndianEncodingMode";
 }
