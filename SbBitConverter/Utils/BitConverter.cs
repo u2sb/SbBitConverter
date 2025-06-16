@@ -514,34 +514,12 @@ public static class BitConverter
     /// <param name="mode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte[] ToByteArray(byte mode)
-    {
-      return ToByteArray(source, (BigAndSmallEndianEncodingMode)mode);
-    }
-
-    /// <summary>
-    ///   转换到 byte[]
-    /// </summary>
-    /// <param name="mode"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] ToByteArray(BigAndSmallEndianEncodingMode mode)
     {
       var size = Unsafe.SizeOf<T>();
       var result = new byte[size];
       WriteTo(source, result.AsSpan(), mode);
       return result;
-    }
-
-    /// <summary>
-    ///   转换到 byte[]
-    /// </summary>
-    /// <param name="destination"></param>
-    /// <param name="mode"></param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteTo(in Span<byte> destination, byte mode)
-    {
-      WriteTo(source, destination, (BigAndSmallEndianEncodingMode)mode);
     }
 
     /// <summary>
@@ -690,18 +668,6 @@ public static class BitConverter
     public T ToT<T>(bool useBigEndianMode = false) where T : unmanaged
     {
       return ToT<T>(source, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
-    }
-
-    /// <summary>
-    ///   转换到T
-    /// </summary>
-    /// <param name="mode"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T ToT<T>(byte mode) where T : unmanaged
-    {
-      return ToT<T>(source, (BigAndSmallEndianEncodingMode)mode);
     }
 
     /// <summary>
@@ -908,18 +874,6 @@ public static class BitConverter
     public T ToT<T>(bool useBigEndianMode = false) where T : unmanaged
     {
       return ToT<T>(source, useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
-    }
-
-    /// <summary>
-    ///   转换到T
-    /// </summary>
-    /// <param name="mode"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T ToT<T>(byte mode) where T : unmanaged
-    {
-      return ToT<T>(source, (BigAndSmallEndianEncodingMode)mode);
     }
 
     /// <summary>

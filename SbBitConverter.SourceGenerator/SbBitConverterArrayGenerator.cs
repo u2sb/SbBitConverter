@@ -77,36 +77,9 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine($"partial struct {structName}");
     sb.AppendLine("{");
 
-    sb.AppendLine($"  public {structName}(ReadOnlySpan<byte> data, byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("  {");
-    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      var offset = elementSize * i;
-      var s0 = $"    this._item{i} = data[{offset}..{offset + elementSize}].ToT<{elementTypeName}>(mode);";
-      sb.AppendLine(s0);
-    }
-
-    sb.AppendLine("  }");
-    sb.AppendLine();
-
     sb.AppendLine(
       $"  public {structName}(ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
     sb.AppendLine("  {");
-    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      var offset = elementSize * i;
-      var s0 = $"    this._item{i} = data[{offset}..{offset + elementSize}].ToT<{elementTypeName}>(mode);";
-      sb.AppendLine(s0);
-    }
-
-    sb.AppendLine("  }");
-    sb.AppendLine();
-
-    sb.AppendLine($"  public {structName}(ReadOnlySpan<ushort> data0, byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("  {");
-    sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
     sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
@@ -140,15 +113,6 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine();
     }
 
-    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"  public byte[] ToByteArray(byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("  {");
-    sb.AppendLine($"    var data = new byte[Unsafe.SizeOf<{structName}>()];");
-    sb.AppendLine("    var span = data.AsSpan();");
-    sb.AppendLine("    WriteTo(span, mode);");
-    sb.AppendLine("    return data;");
-    sb.AppendLine("  }");
-    sb.AppendLine();
 
     sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine(
@@ -158,20 +122,6 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("    var span = data.AsSpan();");
     sb.AppendLine("    WriteTo(span, mode);");
     sb.AppendLine("    return data;");
-    sb.AppendLine("  }");
-    sb.AppendLine();
-
-    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine($"  public void WriteTo(Span<byte> span, byte mode = {arrayInfo.Mode})");
-    sb.AppendLine("  {");
-    sb.AppendLine($"    CheckLength(span, Unsafe.SizeOf<{structName}>());");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      var offset = elementSize * i;
-      var s0 = $"    this._item{i}.WriteTo<{elementTypeName}>(span[{offset}..{offset + elementSize}], mode);";
-      sb.AppendLine(s0);
-    }
-
     sb.AppendLine("  }");
     sb.AppendLine();
 
