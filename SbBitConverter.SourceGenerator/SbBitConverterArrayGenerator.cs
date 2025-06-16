@@ -47,7 +47,14 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine($"unsafe partial struct {structName}");
       sb.AppendLine("{");
       sb.Append("  [FieldOffset(0)]");
-      sb.AppendLine($"  public fixed {elementTypeName} source[{arrayInfo.Length}];");
+      sb.AppendLine($"  public fixed byte source[{elementSize * arrayInfo.Length}];");
+
+      if (arrayInfo.ElementType.AllowUnsafeSource())
+      {
+        sb.Append("  [FieldOffset(0)]");
+        sb.AppendLine($"  public fixed {elementTypeName} elementSource[{arrayInfo.Length}];");
+      }
+
       sb.AppendLine("}");
     }
 

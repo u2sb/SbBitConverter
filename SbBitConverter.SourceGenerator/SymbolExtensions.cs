@@ -97,4 +97,27 @@ internal static class SymbolExtensions
     var r = right.IsGenericType ? right.ConstructUnboundGenericType() : right;
     return SymbolEqualityComparer.Default.Equals(l, r);
   }
+
+  public static bool AllowUnsafeSource(this ITypeSymbol typeSymbol)
+  {
+    return typeSymbol.SpecialType switch
+    {
+      // 1字节类型
+      SpecialType.System_Byte or SpecialType.System_SByte or SpecialType.System_Boolean => true,
+
+      // 2字节类型
+      SpecialType.System_Int16 or SpecialType.System_UInt16 or SpecialType.System_Char => true,
+
+      // 4字节类型
+      SpecialType.System_Int32 or SpecialType.System_UInt32 or SpecialType.System_Single => true,
+
+      // 8字节类型
+      SpecialType.System_Int64 or SpecialType.System_UInt64 or SpecialType.System_Double => true,
+
+      // 16字节类型
+      SpecialType.System_Decimal => true,
+
+      _ => false
+    };
+  }
 }
