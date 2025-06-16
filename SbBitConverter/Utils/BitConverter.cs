@@ -89,9 +89,25 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte ApplyEndianness(bool useBigEndianMode = false)
+    public byte WithEndianness(bool useBigEndianMode = false)
     {
       return source;
+    }
+  }
+
+  /// <summary>
+  ///   byte 拓展
+  /// </summary>
+  extension(ref byte source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
     }
   }
 
@@ -106,9 +122,25 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public sbyte ApplyEndianness(bool useBigEndianMode = false)
+    public sbyte WithEndianness(bool useBigEndianMode = false)
     {
       return source;
+    }
+  }
+
+  /// <summary>
+  ///   sbyte 拓展
+  /// </summary>
+  extension(ref sbyte source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
     }
   }
 
@@ -123,7 +155,7 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public short ApplyEndianness(bool useBigEndianMode = false)
+    public short WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
@@ -131,6 +163,22 @@ public static class BitConverter
     }
   }
 
+  /// <summary>
+  ///   short 拓展
+  /// </summary>
+  extension(ref short source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
 
   /// <summary>
   ///   ushort 拓展
@@ -143,11 +191,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ushort ApplyEndianness(bool useBigEndianMode = false)
+    public ushort WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   ushort 拓展
+  /// </summary>
+  extension(ref ushort source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
@@ -162,11 +227,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int ApplyEndianness(bool useBigEndianMode = false)
+    public int WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   int 拓展
+  /// </summary>
+  extension(ref int source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
@@ -182,11 +264,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint ApplyEndianness(bool useBigEndianMode = false)
+    public uint WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   uint 拓展
+  /// </summary>
+  extension(ref uint source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
@@ -201,11 +300,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public long ApplyEndianness(bool useBigEndianMode = false)
+    public long WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   long 拓展
+  /// </summary>
+  extension(ref long source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
@@ -220,11 +336,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ulong ApplyEndianness(bool useBigEndianMode = false)
+    public ulong WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   ulong 拓展
+  /// </summary>
+  extension(ref ulong source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
@@ -239,10 +372,32 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public float ApplyEndianness(bool useBigEndianMode = false)
+    public float WithEndianness(bool useBigEndianMode = false)
     {
       var span = source.AsReadOnlyByteSpan();
       return span.ToT<float>(useBigEndianMode);
+    }
+  }
+
+  /// <summary>
+  ///   float 拓展
+  /// </summary>
+  extension(ref float source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode)
+      {
+        var span = source.AsByteSpan();
+        ApplyEndianness(in span,
+          useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
+      }
     }
   }
 
@@ -257,10 +412,32 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public double ApplyEndianness(bool useBigEndianMode = false)
+    public double WithEndianness(bool useBigEndianMode = false)
     {
       var span = source.AsReadOnlyByteSpan();
       return span.ToT<double>(useBigEndianMode);
+    }
+  }
+
+  /// <summary>
+  ///   double 拓展
+  /// </summary>
+  extension(ref double source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode)
+      {
+        var span = source.AsByteSpan();
+        ApplyEndianness(in span,
+          useBigEndianMode ? BigAndSmallEndianEncodingMode.ABCD : BigAndSmallEndianEncodingMode.DCBA);
+      }
     }
   }
 
@@ -555,7 +732,7 @@ public static class BitConverter
     {
       destination = MemoryMarshal.Read<T>(source);
       var span = AsByteSpan(ref destination);
-      ApplyEndianness(span, mode);
+      ApplyEndianness(in span, mode);
     }
 
 #if NET8_0_OR_GREATER
@@ -773,7 +950,7 @@ public static class BitConverter
     {
       destination = MemoryMarshal.Read<T>(source);
       var span = AsByteSpan(ref destination);
-      ApplyEndianness(span, mode);
+      ApplyEndianness(in span, mode);
     }
 
 #if NET8_0_OR_GREATER
@@ -861,11 +1038,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Int128 ApplyEndianness(bool useBigEndianMode = false)
+    public Int128 WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   Int128 拓展
+  /// </summary>
+  extension(ref Int128 source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
@@ -880,11 +1074,28 @@ public static class BitConverter
     /// <param name="useBigEndianMode"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public UInt128 ApplyEndianness(bool useBigEndianMode = false)
+    public UInt128 WithEndianness(bool useBigEndianMode = false)
     {
       return System.BitConverter.IsLittleEndian != useBigEndianMode
         ? source
         : BinaryPrimitives.ReverseEndianness(source);
+    }
+  }
+
+  /// <summary>
+  ///   Int128 拓展
+  /// </summary>
+  extension(ref UInt128 source)
+  {
+    /// <summary>
+    ///   应用大小端
+    /// </summary>
+    /// <param name="useBigEndianMode"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ApplyEndianness(bool useBigEndianMode = false)
+    {
+      if (System.BitConverter.IsLittleEndian == useBigEndianMode) source = BinaryPrimitives.ReverseEndianness(source);
     }
   }
 
