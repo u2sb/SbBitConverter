@@ -60,8 +60,20 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine();
     if (!hasStructLayoutAttribute)
+    {
+      var pack = 1;
+      if (elementSize % 128 == 0) pack = 128;
+      else if (elementSize % 64 == 0) pack = 64;
+      else if (elementSize % 32 == 0) pack = 32;
+      else if (elementSize % 16 == 0) pack = 16;
+      else if (elementSize % 8 == 0) pack = 8;
+      else if (elementSize % 4 == 0) pack = 4;
+      else if (elementSize % 2 == 0) pack = 2;
+
       sb.AppendLine(
-        $"[StructLayout(LayoutKind.Explicit, Pack = {elementSize}, Size = {elementSize * arrayInfo.Length})]");
+        $"[StructLayout(LayoutKind.Explicit, Pack = {pack}, Size = {elementSize * arrayInfo.Length})]");
+    }
+
     sb.AppendLine($"partial struct {structName}");
     sb.AppendLine("{");
 
