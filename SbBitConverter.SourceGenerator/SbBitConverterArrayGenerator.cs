@@ -145,24 +145,17 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine($"  public int Length => {arrayInfo.Length};");
     sb.AppendLine();
 
-    sb.AppendLine($"  public {elementTypeName} this[int index]");
+    sb.AppendLine($"  public ref {elementTypeName} this[int index]");
     sb.AppendLine("  {");
+    sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine("    get");
-    sb.AppendLine("    {");
-    sb.AppendLine("      return index switch {");
-    for (var i = 0; i < arrayInfo.Length; i++) sb.AppendLine($"        {i} => _item{i},");
-    sb.AppendLine("        _ => throw new IndexOutOfRangeException()");
-    sb.AppendLine("      };");
-    sb.AppendLine("    }");
-    sb.AppendLine("    set");
     sb.AppendLine("    {");
     sb.AppendLine("      switch (index)");
     sb.AppendLine("      {");
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       sb.AppendLine($"        case {i}:");
-      sb.AppendLine($"          _item{i} = value;");
-      sb.AppendLine("        break;");
+      sb.AppendLine($"          return ref Unsafe.AsRef(ref _item{i});");
     }
 
     sb.AppendLine("        default:");
