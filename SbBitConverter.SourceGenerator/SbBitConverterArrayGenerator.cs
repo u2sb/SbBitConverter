@@ -78,7 +78,7 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("{");
 
     sb.AppendLine(
-      $"  public {structName}(ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
+      $"  public {structName}(scoped in ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
@@ -92,7 +92,7 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine();
 
     sb.AppendLine(
-      $"  public {structName}(ReadOnlySpan<ushort> data0, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
+      $"  public {structName}(scoped in ReadOnlySpan<ushort> data0, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
     sb.AppendLine("  {");
     sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
     sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
@@ -128,7 +128,7 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine(
-      $"  public void WriteTo(Span<byte> span, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
+      $"  public void WriteTo(scoped in Span<byte> span, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    CheckLength(span, Unsafe.SizeOf<{structName}>());");
     for (var i = 0; i < arrayInfo.Length; i++)
@@ -144,7 +144,7 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine($"  public int Length => {arrayInfo.Length};");
     sb.AppendLine();
-
+    sb.AppendLine("#if NET8_0_OR_GREATER");
     sb.AppendLine($"  public ref {elementTypeName} this[int index]");
     sb.AppendLine("  {");
     sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
@@ -155,7 +155,7 @@ public static class SbBitConverterArrayGenerator
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       sb.AppendLine($"        case {i}:");
-      sb.AppendLine($"          return ref Unsafe.AsRef(ref _item{i});");
+      sb.AppendLine($"          return ref Unsafe.AsRef(in _item{i});");
     }
 
     sb.AppendLine("        default:");
@@ -163,6 +163,44 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("      }");
     sb.AppendLine("    }");
     sb.AppendLine("  }");
+    sb.AppendLine("#else");
+    sb.AppendLine($"  public {elementTypeName} this[int index]");
+    sb.AppendLine("  {");
+    sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine("    get");
+    sb.AppendLine("    {");
+    sb.AppendLine("      switch (index)");
+    sb.AppendLine("      {");
+    for (var i = 0; i < arrayInfo.Length; i++)
+    {
+      sb.AppendLine($"        case {i}:");
+      sb.AppendLine($"          return _item{i};");
+    }
+
+    sb.AppendLine("        default:");
+    sb.AppendLine("          throw new IndexOutOfRangeException();");
+    sb.AppendLine("      }");
+    sb.AppendLine("    }");
+
+    sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine("    set");
+    sb.AppendLine("    {");
+    sb.AppendLine("      switch (index)");
+    sb.AppendLine("      {");
+    for (var i = 0; i < arrayInfo.Length; i++)
+    {
+      sb.AppendLine($"        case {i}:");
+      sb.AppendLine($"          _item{i} = value;");
+      sb.AppendLine($"          break;");
+
+    }
+
+    sb.AppendLine("        default:");
+    sb.AppendLine("          throw new IndexOutOfRangeException();");
+    sb.AppendLine("      }");
+    sb.AppendLine("    }");
+    sb.AppendLine("  }");
+    sb.AppendLine("#endif");
     sb.AppendLine();
 
     sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");

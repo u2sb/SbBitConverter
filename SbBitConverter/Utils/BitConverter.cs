@@ -98,7 +98,7 @@ public static class BitConverter
   /// <summary>
   ///   byte 拓展
   /// </summary>
-  extension(ref byte source)
+  extension(scoped ref byte source)
   {
     /// <summary>
     ///   应用大小端
@@ -131,7 +131,7 @@ public static class BitConverter
   /// <summary>
   ///   sbyte 拓展
   /// </summary>
-  extension(ref sbyte source)
+  extension(scoped ref sbyte source)
   {
     /// <summary>
     ///   应用大小端
@@ -166,7 +166,7 @@ public static class BitConverter
   /// <summary>
   ///   short 拓展
   /// </summary>
-  extension(ref short source)
+  extension(scoped ref short source)
   {
     /// <summary>
     ///   应用大小端
@@ -202,7 +202,7 @@ public static class BitConverter
   /// <summary>
   ///   ushort 拓展
   /// </summary>
-  extension(ref ushort source)
+  extension(scoped ref ushort source)
   {
     /// <summary>
     ///   应用大小端
@@ -238,7 +238,7 @@ public static class BitConverter
   /// <summary>
   ///   int 拓展
   /// </summary>
-  extension(ref int source)
+  extension(scoped ref int source)
   {
     /// <summary>
     ///   应用大小端
@@ -275,7 +275,7 @@ public static class BitConverter
   /// <summary>
   ///   uint 拓展
   /// </summary>
-  extension(ref uint source)
+  extension(scoped ref uint source)
   {
     /// <summary>
     ///   应用大小端
@@ -311,7 +311,7 @@ public static class BitConverter
   /// <summary>
   ///   long 拓展
   /// </summary>
-  extension(ref long source)
+  extension(scoped ref long source)
   {
     /// <summary>
     ///   应用大小端
@@ -347,7 +347,7 @@ public static class BitConverter
   /// <summary>
   ///   ulong 拓展
   /// </summary>
-  extension(ref ulong source)
+  extension(scoped ref ulong source)
   {
     /// <summary>
     ///   应用大小端
@@ -382,7 +382,7 @@ public static class BitConverter
   /// <summary>
   ///   float 拓展
   /// </summary>
-  extension(ref float source)
+  extension(scoped ref float source)
   {
     /// <summary>
     ///   应用大小端
@@ -422,7 +422,7 @@ public static class BitConverter
   /// <summary>
   ///   double 拓展
   /// </summary>
-  extension(ref double source)
+  extension(scoped ref double source)
   {
     /// <summary>
     ///   应用大小端
@@ -446,7 +446,7 @@ public static class BitConverter
   ///   Memory 转换
   /// </summary>
   /// <typeparam name="TFrom"></typeparam>
-  extension<TFrom>(Memory<TFrom> source) where TFrom : unmanaged
+  extension<TFrom>(in Memory<TFrom> source) where TFrom : unmanaged
   {
     /// <summary>
     ///   Memory 转换
@@ -467,7 +467,7 @@ public static class BitConverter
   ///   通用 转换
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  extension<T>(ref T source) where T : unmanaged
+  extension<T>(scoped ref T source) where T : unmanaged
   {
     /// <summary>
     ///   解释为为 ByteSpan
@@ -529,7 +529,7 @@ public static class BitConverter
     /// <param name="mode"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteTo(in Span<byte> destination, BigAndSmallEndianEncodingMode mode)
+    public void WriteTo(scoped in Span<byte> destination, BigAndSmallEndianEncodingMode mode)
     {
       var size = Unsafe.SizeOf<T>();
 #if NET8_0_OR_GREATER
@@ -544,7 +544,7 @@ public static class BitConverter
   /// <summary>
   ///   ReadOnlySpan 拓展
   /// </summary>
-  extension(in ReadOnlySpan<byte> source)
+  extension(scoped in ReadOnlySpan<byte> source)
   {
     /// <summary>
     ///   转换为 short 类型
@@ -734,7 +734,7 @@ public static class BitConverter
   /// <summary>
   ///   ReadOnlySpan 拓展
   /// </summary>
-  extension<T>(in ReadOnlySpan<T> source) where T : unmanaged
+  extension<T>(scoped in ReadOnlySpan<T> source) where T : unmanaged
   {
     /// <summary>
     ///   解释为Span
@@ -750,7 +750,7 @@ public static class BitConverter
   /// <summary>
   ///   Span 拓展
   /// </summary>
-  extension(in Span<byte> source)
+  extension(scoped in Span<byte> source)
   {
     /// <summary>
     ///   转换为 short 类型
@@ -900,7 +900,7 @@ public static class BitConverter
     /// <param name="destination"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WriteTo<T>(ref T destination, BigAndSmallEndianEncodingMode mode) where T : unmanaged
+    public void WriteTo<T>(scoped ref T destination, BigAndSmallEndianEncodingMode mode) where T : unmanaged
     {
       destination = MemoryMarshal.Read<T>(source);
       var span = AsByteSpan(ref destination);
@@ -1003,7 +1003,7 @@ public static class BitConverter
   /// <summary>
   ///   Int128 拓展
   /// </summary>
-  extension(ref Int128 source)
+  extension(scoped ref Int128 source)
   {
     /// <summary>
     ///   应用大小端
@@ -1039,7 +1039,7 @@ public static class BitConverter
   /// <summary>
   ///   Int128 拓展
   /// </summary>
-  extension(ref UInt128 source)
+  extension(scoped ref UInt128 source)
   {
     /// <summary>
     ///   应用大小端

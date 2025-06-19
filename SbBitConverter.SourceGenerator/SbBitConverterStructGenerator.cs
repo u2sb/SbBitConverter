@@ -62,7 +62,7 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("{");
 
     sb.AppendLine(
-      $"  public {structName}(ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
+      $"  public {structName}(scoped in ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toTStringBuilder}");
@@ -70,7 +70,7 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine();
 
     sb.AppendLine(
-      $"  public {structName}(ReadOnlySpan<ushort> data0, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
+      $"  public {structName}(scoped in ReadOnlySpan<ushort> data0, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
     sb.AppendLine("  {");
     sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
     sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
@@ -90,7 +90,7 @@ public static class SbBitConverterStructGenerator
 
     sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine(
-      $"  public void WriteTo(Span<byte> span, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
+      $"  public void WriteTo(scoped in Span<byte> span, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    CheckLength(span, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toBytesStringBuilder}");
