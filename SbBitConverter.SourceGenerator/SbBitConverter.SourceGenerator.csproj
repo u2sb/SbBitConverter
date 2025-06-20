@@ -18,10 +18,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SbBitConverter.Attributes\SbBitConverter.Attributes.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Include="..\icons\avatar.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>

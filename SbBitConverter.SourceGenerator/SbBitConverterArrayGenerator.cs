@@ -144,7 +144,6 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine($"  public int Length => {arrayInfo.Length};");
     sb.AppendLine();
-    sb.AppendLine("#if NET8_0_OR_GREATER");
     sb.AppendLine($"  public ref {elementTypeName} this[int index]");
     sb.AppendLine("  {");
     sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
@@ -155,7 +154,11 @@ public static class SbBitConverterArrayGenerator
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       sb.AppendLine($"        case {i}:");
+      sb.AppendLine("#if NET8_0_OR_GREATER");
       sb.AppendLine($"          return ref Unsafe.AsRef(in _item{i});");
+      sb.AppendLine("#else");
+      sb.AppendLine($"          return ref AsSpan()[{i}];");
+      sb.AppendLine("#endif");
     }
 
     sb.AppendLine("        default:");
@@ -163,44 +166,6 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("      }");
     sb.AppendLine("    }");
     sb.AppendLine("  }");
-    sb.AppendLine("#else");
-    sb.AppendLine($"  public {elementTypeName} this[int index]");
-    sb.AppendLine("  {");
-    sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine("    get");
-    sb.AppendLine("    {");
-    sb.AppendLine("      switch (index)");
-    sb.AppendLine("      {");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      sb.AppendLine($"        case {i}:");
-      sb.AppendLine($"          return _item{i};");
-    }
-
-    sb.AppendLine("        default:");
-    sb.AppendLine("          throw new IndexOutOfRangeException();");
-    sb.AppendLine("      }");
-    sb.AppendLine("    }");
-
-    sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
-    sb.AppendLine("    set");
-    sb.AppendLine("    {");
-    sb.AppendLine("      switch (index)");
-    sb.AppendLine("      {");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      sb.AppendLine($"        case {i}:");
-      sb.AppendLine($"          _item{i} = value;");
-      sb.AppendLine($"          break;");
-
-    }
-
-    sb.AppendLine("        default:");
-    sb.AppendLine("          throw new IndexOutOfRangeException();");
-    sb.AppendLine("      }");
-    sb.AppendLine("    }");
-    sb.AppendLine("  }");
-    sb.AppendLine("#endif");
     sb.AppendLine();
 
     sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
