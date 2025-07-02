@@ -36,6 +36,14 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("using System.Runtime.CompilerServices;");
     sb.AppendLine("using System.Runtime.InteropServices;");
     sb.AppendLine("using static SbBitConverter.Utils.Utils;");
+    sb.AppendLine("#if NETSTANDARD2_0");
+    sb.AppendLine("using static SbBitConverter.Utils.BitConverter;");
+    sb.AppendLine("#else");
+    sb.AppendLine("using static System.Runtime.InteropServices.MemoryMarshal;");
+    sb.AppendLine("#endif");
+
+
+
     if (!isGlobalNamespace)
     {
       sb.AppendLine($"namespace {namespaceName}");
@@ -173,7 +181,7 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("  {");
 
     sb.AppendLine(
-      $"    return MemoryMarshal.CreateSpan(ref _item0, {arrayInfo.Length});");
+      $"    return CreateSpan(ref _item0, {arrayInfo.Length});");
 
     sb.AppendLine("  }");
     sb.AppendLine();

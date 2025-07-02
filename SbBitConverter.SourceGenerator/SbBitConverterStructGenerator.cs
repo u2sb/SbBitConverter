@@ -51,6 +51,11 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("using System.Runtime.CompilerServices;");
     sb.AppendLine("using System.Runtime.InteropServices;");
     sb.AppendLine("using static SbBitConverter.Utils.Utils;");
+    sb.AppendLine("#if NETSTANDARD2_0");
+    sb.AppendLine("using static SbBitConverter.Utils.BitConverter;");
+    sb.AppendLine("#else");
+    sb.AppendLine("using static System.Runtime.InteropServices.MemoryMarshal;");
+    sb.AppendLine("#endif");
 
     if (!isGlobalNamespace)
     {

@@ -412,7 +412,11 @@ public static class BitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<byte> AsByteSpan()
     {
+#if NETSTANDARD2_0
+      return CreateSpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+#else
       return MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+#endif
     }
 
     /// <summary>
@@ -422,7 +426,11 @@ public static class BitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> AsReadOnlyByteSpan()
     {
+#if NETSTANDARD2_0
+      return CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+#else
       return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref source), Unsafe.SizeOf<T>());
+#endif
     }
   }
 
@@ -679,7 +687,11 @@ public static class BitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<T> AsSpan()
     {
+#if NETSTANDARD2_0
+      return CreateSpan(ref MemoryMarshal.GetReference(source), source.Length);
+#else
       return MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(source), source.Length);
+#endif
     }
   }
 
@@ -1056,5 +1068,38 @@ public static class BitConverter
     }
   }
 
+#endif
+
+#if NETSTANDARD2_0
+
+  /// <summary>
+  ///   创建一个 Span 但要谨慎使用
+  /// </summary>
+  /// <param name="reference"></param>
+  /// <param name="length"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  public static Span<T> CreateSpan<T>(scoped ref T reference, int length) where T : unmanaged
+  {
+    unsafe
+    {
+      return new Span<T>(Unsafe.AsPointer(ref reference), length);
+    }
+  }
+
+  /// <summary>
+  ///   创建一个 ReadOnlySpan 但要谨慎使用
+  /// </summary>
+  /// <param name="reference"></param>
+  /// <param name="length"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  public static ReadOnlySpan<T> CreateReadOnlySpan<T>(scoped ref T reference, int length) where T : unmanaged
+  {
+    unsafe
+    {
+      return new ReadOnlySpan<T>(Unsafe.AsPointer(ref reference), length);
+    }
+  }
 #endif
 }
