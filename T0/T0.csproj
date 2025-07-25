@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SbBitConverter.Attributes\SbBitConverter.Attributes.csproj" />
     <ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" />
     <ProjectReference Include="..\SbBitConverter\SbBitConverter.csproj" />
   </ItemGroup>
