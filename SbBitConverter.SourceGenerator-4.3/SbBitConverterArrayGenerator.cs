@@ -1,7 +1,7 @@
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using System.Text;
 using static SbBitConverter.SourceGenerator.ConstTable;
 using static SbBitConverter.SourceGenerator.Utils;
 
@@ -9,8 +9,7 @@ namespace SbBitConverter.SourceGenerator;
 
 public static class SbBitConverterArrayGenerator
 {
-  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe,
-    LanguageVersion languageVersion)
+  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe, LanguageVersion languageVersion)
   {
     var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol, context.Compilation);
     if (sbBitConverterArrayInfo is null) return;
@@ -157,13 +156,8 @@ public static class SbBitConverterArrayGenerator
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       sb.AppendLine($"        case {i}:");
-      sb.AppendLine(
-        languageVersion >= LanguageVersion.CSharp12
-          ? $"          return ref Unsafe.AsRef(in _item{i});"
-          : $"          return ref AsSpan()[{i}];"
-      );
+      sb.AppendLine($"          return ref AsSpan()[{i}];");
     }
-
     sb.AppendLine("        default:");
     sb.AppendLine("          throw new IndexOutOfRangeException();");
     sb.AppendLine("      }");
@@ -202,7 +196,6 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine("  }");
       sb.AppendLine();
     }
-
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
     sb.AppendLine("#pragma warning restore");

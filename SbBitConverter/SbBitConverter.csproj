@@ -28,7 +28,19 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
+		<None Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.8\cs" Pack="true" Visible="false" />
+		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SbBitConverter.SourceGenerator-4.3\SbBitConverter.SourceGenerator.4.3.csproj" ReferenceOutputAssembly="false" />
 		<None Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
+		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SbBitConverter.SourceGenerator-4.1\SbBitConverter.SourceGenerator.4.1.csproj" ReferenceOutputAssembly="false" />
+		<None Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.1\cs" Pack="true" Visible="false" />
 		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
 	</ItemGroup>
 
