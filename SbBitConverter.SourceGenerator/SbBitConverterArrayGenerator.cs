@@ -189,19 +189,19 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("  }");
     sb.AppendLine();
 
-    if (languageVersion >= LanguageVersion.CSharp8)
-    {
-      sb.AppendLine($"  public Span<{elementTypeName}> this[Range range]");
-      sb.AppendLine("  {");
-      sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
-      sb.AppendLine("    get");
-      sb.AppendLine("    {");
-      sb.AppendLine("      var span = AsSpan();");
-      sb.AppendLine("      return span[range];");
-      sb.AppendLine("    }");
-      sb.AppendLine("  }");
-      sb.AppendLine();
-    }
+    // if (languageVersion >= LanguageVersion.CSharp8)
+    // {
+    //   sb.AppendLine($"  public Span<{elementTypeName}> this[Range range]");
+    //   sb.AppendLine("  {");
+    //   sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    //   sb.AppendLine("    get");
+    //   sb.AppendLine("    {");
+    //   sb.AppendLine("      var span = AsSpan();");
+    //   sb.AppendLine("      return span[range];");
+    //   sb.AppendLine("    }");
+    //   sb.AppendLine("  }");
+    //   sb.AppendLine();
+    // }
 
     sb.AppendLine("}");
     if (!isGlobalNamespace) sb.AppendLine("}");
