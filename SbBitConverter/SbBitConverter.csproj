@@ -39,9 +39,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SbBitConverter.SourceGenerator-4.1\SbBitConverter.SourceGenerator.4.1.csproj" ReferenceOutputAssembly="false" />
-		<None Include="..\SbBitConverter.SourceGenerator-4.1\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.1\cs" Pack="true" Visible="false" />
-		<Analyzer Include="..\SbBitConverter.SourceGenerator-4.1\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
+		<ProjectReference Include="..\SbBitConverter.SourceGenerator-3.8\SbBitConverter.SourceGenerator.3.8.csproj" ReferenceOutputAssembly="false" />
+		<None Include="..\SbBitConverter.SourceGenerator-3.8\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn3.8\cs" Pack="true" Visible="false" />
+		<Analyzer Include="..\SbBitConverter.SourceGenerator-3.8\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -56,6 +56,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Sb.Extensions" Version="0.0.5" />
+	  <PackageReference Include="Sb.Extensions" Version="0.0.6" />
 	</ItemGroup>
 </Project>
