@@ -16,7 +16,10 @@ public static class SbBitConverterArrayGenerator
     if (sbBitConverterArrayInfo is null) return;
 
     var source = GenerateCodeForStruct(context, structSymbol, sbBitConverterArrayInfo, isUnsafe, languageVersion);
-    context.AddSource($"{structSymbol.Name}_SbBitConverterArray.g.cs", SourceText.From(source, Encoding.UTF8));
+
+    var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
+    var namespaceName = isGlobalNamespace ? string.Empty : $"{structSymbol.ContainingNamespace.ToDisplayString()}_";
+    context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterArray.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
   private static string GenerateCodeForStruct(GeneratorExecutionContext context, INamedTypeSymbol structSymbol,

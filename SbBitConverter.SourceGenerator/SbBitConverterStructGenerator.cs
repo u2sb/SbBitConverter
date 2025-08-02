@@ -23,7 +23,10 @@ public static class SbBitConverterStructGenerator
     if (fieldInfos.Count == 0) return;
 
     var source = GenerateCodeForStruct(context, structSymbol, encodingMode, fieldInfos, isUnsafe);
-    context.AddSource($"{structSymbol.Name}_SbBitConverterStruct.g.cs", SourceText.From(source, Encoding.UTF8));
+
+    var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
+    var namespaceName = isGlobalNamespace ? string.Empty : $"{structSymbol.ContainingNamespace.ToDisplayString()}_";
+    context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterStruct.g.cs", SourceText.From(source, Encoding.UTF8));
   }
 
   private static string GenerateCodeForStruct(GeneratorExecutionContext context, INamedTypeSymbol structSymbol,
