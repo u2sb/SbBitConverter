@@ -1,61 +1,68 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0;net10.0</TargetFrameworks>
-		<Nullable>enable</Nullable>
-		<LangVersion>preview</LangVersion>
-		<AssemblyName>SbBitConverter</AssemblyName>
-		<PackageId>SbBitConverter</PackageId>
-		<PackageTags>BitConverter,Modbus,Iot</PackageTags>
-		<Description>Sb BitConverter</Description>
-		<PackageProjectUrl>https://github.com/u2sb/SbBitConverter.git</PackageProjectUrl>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<Title>SbBitConverter</Title>
-		<Authors>MonoLogueChi</Authors>
-		<Company>U2SB</Company>
-		<RepositoryUrl>https://github.com/u2sb/SbBitConverter.git</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageIcon>avatar.png</PackageIcon>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<Copyright>U2SB</Copyright>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <AssemblyName>SbBitConverter</AssemblyName>
+    <PackageId>SbBitConverter</PackageId>
+    <PackageTags>BitConverter,Modbus,Iot</PackageTags>
+    <Description>Sb BitConverter</Description>
+    <PackageProjectUrl>https://github.com/u2sb/SbBitConverter.git</PackageProjectUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Title>SbBitConverter</Title>
+    <Authors>MonoLogueChi</Authors>
+    <Company>U2SB</Company>
+    <RepositoryUrl>https://github.com/u2sb/SbBitConverter.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>avatar.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Copyright>U2SB</Copyright>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
-		<None Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.8\cs" Pack="true" Visible="false" />
-		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj"
+      ReferenceOutputAssembly="false" />
+    <ProjectReference
+      Include="..\SbBitConverter.SourceGenerator-4.3\SbBitConverter.SourceGenerator.4.3.csproj"
+      ReferenceOutputAssembly="false" />
+    <ProjectReference
+      Include="..\SbBitConverter.SourceGenerator-3.8\SbBitConverter.SourceGenerator.3.8.csproj"
+      ReferenceOutputAssembly="false" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\SbBitConverter.SourceGenerator-4.3\SbBitConverter.SourceGenerator.4.3.csproj" ReferenceOutputAssembly="false" />
-		<None Include="..\SbBitConverter.SourceGenerator-4.3\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
-		<Analyzer Include="..\SbBitConverter.SourceGenerator-4.3\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="SbBitConverter.targets" PackagePath="build" Pack="true" />
+    <None
+      Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll"
+      PackagePath="analyzers\dotnet\roslyn4.8\cs" Pack="true" Visible="false" />
+    <None
+      Include="..\SbBitConverter.SourceGenerator-4.3\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll"
+      PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
+    <None
+      Include="..\SbBitConverter.SourceGenerator-3.8\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll"
+      PackagePath="analyzers\dotnet\roslyn3.8\cs" Pack="true" Visible="false" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\SbBitConverter.SourceGenerator-3.8\SbBitConverter.SourceGenerator.3.8.csproj" ReferenceOutputAssembly="false" />
-		<None Include="..\SbBitConverter.SourceGenerator-3.8\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" PackagePath="analyzers\dotnet\roslyn3.8\cs" Pack="true" Visible="false" />
-		<Analyzer Include="..\SbBitConverter.SourceGenerator-3.8\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="..\icons\avatar.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="..\icons\avatar.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-		<None Include="..\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="Sb.Extensions" Version="0.0.6" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Sb.Extensions" Version="0.0.6" />
+  </ItemGroup>
 </Project>

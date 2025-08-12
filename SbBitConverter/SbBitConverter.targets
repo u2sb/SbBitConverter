@@ -1,0 +1,48 @@
+<Project>
+  <!-- 收集本包的 Analyzer（源生成器） -->
+  <Target Name="SbBitConverterGatherAnalyzers">
+    <ItemGroup>
+      <SbBitConverterAnalyzer Include="@(Analyzer)" Condition="'%(Analyzer.NuGetPackageId)' == 'SbBitConverter'" />
+    </ItemGroup>
+  </Target>
+
+  <!-- 如果没有 Roslyn，则移除 Analyzer -->
+  <Target Name="SbBitConverterRemoveAnalyzersForRoslynNotFound"
+          Condition="'$(CSharpCoreTargetsPath)' == ''"
+          AfterTargets="ResolvePackageDependenciesForBuild;ResolveNuGetPackageAssets"
+          DependsOnTargets="SbBitConverterGatherAnalyzers">
+    <ItemGroup>
+      <Analyzer Remove="@(SbBitConverterAnalyzer)"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- 根据 Roslyn 版本选择分包，移除不兼容的分包 -->
+  <Target Name="SbBitConverterRemoveAnalyzersForRoslynVersion"
+          Condition="'$(CSharpCoreTargetsPath)' != ''"
+          AfterTargets="ResolvePackageDependenciesForBuild;ResolveNuGetPackageAssets"
+          DependsOnTargets="SbBitConverterGatherAnalyzers">
+
+    <GetAssemblyIdentity AssemblyFiles="$([System.IO.Path]::Combine(`$([System.IO.Path]::GetDirectoryName($(CSharpCoreTargetsPath)))`,`Microsoft.Build.Tasks.CodeAnalysis.dll`))">
+      <Output TaskParameter="Assemblies" ItemName="SbBitConverterCurrentCompilerAssemblyIdentity"/>
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <SbBitConverterCurrentCompilerVersion>@(SbBitConverterCurrentCompilerAssemblyIdentity->'%(Version)')</SbBitConverterCurrentCompilerVersion>
+      <!-- 选择最高兼容分包 -->
+      <SbBitConverterSelectedRoslynAnalyzerDirectoryName Condition="$([MSBuild]::VersionGreaterThanOrEquals($(SbBitConverterCurrentCompilerVersion), 4.8))">4.8</SbBitConverterSelectedRoslynAnalyzerDirectoryName>
+      <SbBitConverterSelectedRoslynAnalyzerDirectoryName Condition="$([MSBuild]::VersionGreaterThanOrEquals($(SbBitConverterCurrentCompilerVersion), 4.3)) and '$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 4.8))' == 'true'">4.3</SbBitConverterSelectedRoslynAnalyzerDirectoryName>
+      <SbBitConverterSelectedRoslynAnalyzerDirectoryName Condition="$([MSBuild]::VersionGreaterThanOrEquals($(SbBitConverterCurrentCompilerVersion), 3.8)) and '$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 4.3))' == 'true'">3.8</SbBitConverterSelectedRoslynAnalyzerDirectoryName>
+      <SbBitConverterCurrentCompilerVersionIsNotNewEnough Condition="$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 3.8))">true</SbBitConverterCurrentCompilerVersionIsNotNewEnough>
+    </PropertyGroup>
+    <!-- 移除不兼容分包 -->
+    <ItemGroup Condition="'$(SbBitConverterSelectedRoslynAnalyzerDirectoryName)' != ''">
+      <Analyzer Remove="@(SbBitConverterAnalyzer)" Condition="!$([System.String]::Concat('', '%(SbBitConverterAnalyzer.FullPath)').Contains('$(SbBitConverterSelectedRoslynAnalyzerDirectoryName)'))"/>
+    </ItemGroup>
+    <!-- 如果版本过低，全部移除并警告 -->
+    <ItemGroup Condition="'$(SbBitConverterCurrentCompilerVersionIsNotNewEnough)' == 'true'">
+      <Analyzer Remove="@(SbBitConverterAnalyzer)"/>
+    </ItemGroup>
+    <Warning Condition="'$(SbBitConverterCurrentCompilerVersionIsNotNewEnough)' == 'true'"
+             Code="SBBITCONVERTER0001"
+             Text="SbBitConverter 源生成器已被禁用，因为需要 Roslyn 3.8 及以上版本。"/>
+  </Target>
+</Project>
