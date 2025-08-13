@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -7,40 +5,41 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace SbBitConverter.SourceGenerator;
 
 [Generator]
-public class SbStructGenerator : ISourceGenerator
+public class SbStructGenerator : IIncrementalGenerator
 {
-  public void Initialize(GeneratorInitializationContext context)
+  public void Initialize(IncrementalGeneratorInitializationContext context)
   {
-    context.RegisterForSyntaxNotifications(() => new SbBitConverterStructSyntaxReceiver());
-  }
+    // 语法阶段只筛选带特性的结构体
+    var structDeclarations = context.SyntaxProvider
+      .CreateSyntaxProvider(
+        (node, _) => node is StructDeclarationSyntax { AttributeLists.Count: > 0 },
+        (ctx, _) => ctx
+      );
 
-  public void Execute(GeneratorExecutionContext context)
-  {
-    if (context.SyntaxReceiver is not SbBitConverterStructSyntaxReceiver receiver) return;
+    // 语义分析，判断 Attribute 类型
+    var structSymbols = structDeclarations
+      .Select((ctx, _) =>
+      {
+        var structDecl = (StructDeclarationSyntax)ctx.Node;
+        var symbol = ctx.SemanticModel.GetDeclaredSymbol(structDecl);
+        var compilation = ctx.SemanticModel.Compilation;
+        return new
+        {
+          Symbol = symbol,
+          Compilation = compilation
+        };
+      }).Where(x => x?.Symbol != null);
 
-    var isUnsafe = context.Compilation is CSharpCompilation { Options.AllowUnsafe: true };
-    var languageVersion = context.Compilation is CSharpCompilation csharpCompilation
-      ? csharpCompilation.LanguageVersion
-      : LanguageVersion.CSharp7;
-
-    foreach (var structDecl in receiver.Structs)
+    // 生成代码
+    context.RegisterSourceOutput(structSymbols, (spc, x) =>
     {
-      var model = context.Compilation.GetSemanticModel(structDecl.SyntaxTree);
-      if (ModelExtensions.GetDeclaredSymbol(model, structDecl) is not INamedTypeSymbol structSymbol) continue;
+      var isUnsafe = x.Compilation is CSharpCompilation { Options.AllowUnsafe: true };
+      var languageVersion = x.Compilation is CSharpCompilation csharpCompilation
+        ? csharpCompilation.LanguageVersion
+        : LanguageVersion.CSharp7;
 
-      SbBitConverterStructGenerator.Gen(context, structSymbol, isUnsafe, languageVersion);
-      SbBitConverterArrayGenerator.Gen(context, structSymbol, isUnsafe, languageVersion);
-    }
-  }
-}
-
-internal class SbBitConverterStructSyntaxReceiver : ISyntaxReceiver
-{
-  public List<StructDeclarationSyntax> Structs { get; } = [];
-
-  public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-  {
-    if (syntaxNode is StructDeclarationSyntax { AttributeLists.Count: > 0 } structDecl)
-      Structs.Add(structDecl);
+      SbBitConverterStructGenerator.Gen(spc, x.Symbol!, isUnsafe, languageVersion, x.Compilation);
+      SbBitConverterArrayGenerator.Gen(spc, x.Symbol!, isUnsafe, languageVersion, x.Compilation);
+    });
   }
 }

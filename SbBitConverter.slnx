@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="SbBitConverter.SourceGenerator-3.8/SbBitConverter.SourceGenerator.3.8.csproj" />
-  <Project Path="SbBitConverter.SourceGenerator-4.3/SbBitConverter.SourceGenerator.4.3.csproj" />
+  <Folder Name="/SbBitConverter.SourceGenerator-4.3/">
+    <Project Path="SbBitConverter.SourceGenerator-4.3/SbBitConverter.SourceGenerator.4.3.csproj" />
+  </Folder>
   <Project Path="SbBitConverter.SourceGenerator/SbBitConverter.SourceGenerator.csproj" Id="6eda417f-f25a-7e9b-a649-6aa8257fddc6" />
   <Project Path="SbBitConverter/SbBitConverter.csproj" />
   <Project Path="T0/T0.csproj" Id="ae556a85-8d7b-4976-9c06-222b643d3316" />

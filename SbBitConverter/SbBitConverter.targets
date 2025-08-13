@@ -30,8 +30,7 @@
       <!-- 选择最高兼容分包 -->
       <SbBitConverterSelectedRoslynAnalyzerDirectoryName Condition="$([MSBuild]::VersionGreaterThanOrEquals($(SbBitConverterCurrentCompilerVersion), 4.8))">4.8</SbBitConverterSelectedRoslynAnalyzerDirectoryName>
       <SbBitConverterSelectedRoslynAnalyzerDirectoryName Condition="$([MSBuild]::VersionGreaterThanOrEquals($(SbBitConverterCurrentCompilerVersion), 4.3)) and '$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 4.8))' == 'true'">4.3</SbBitConverterSelectedRoslynAnalyzerDirectoryName>
-      <SbBitConverterSelectedRoslynAnalyzerDirectoryName Condition="$([MSBuild]::VersionGreaterThanOrEquals($(SbBitConverterCurrentCompilerVersion), 3.8)) and '$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 4.3))' == 'true'">3.8</SbBitConverterSelectedRoslynAnalyzerDirectoryName>
-      <SbBitConverterCurrentCompilerVersionIsNotNewEnough Condition="$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 3.8))">true</SbBitConverterCurrentCompilerVersionIsNotNewEnough>
+      <SbBitConverterCurrentCompilerVersionIsNotNewEnough Condition="$([MSBuild]::VersionLessThan($(SbBitConverterCurrentCompilerVersion), 4.3))">true</SbBitConverterCurrentCompilerVersionIsNotNewEnough>
     </PropertyGroup>
     <!-- 移除不兼容分包 -->
     <ItemGroup Condition="'$(SbBitConverterSelectedRoslynAnalyzerDirectoryName)' != ''">
@@ -43,6 +42,6 @@
     </ItemGroup>
     <Warning Condition="'$(SbBitConverterCurrentCompilerVersionIsNotNewEnough)' == 'true'"
              Code="SBBITCONVERTER0001"
-             Text="SbBitConverter 源生成器已被禁用，因为需要 Roslyn 3.8 及以上版本。"/>
+             Text="SbBitConverter 源生成器已被禁用，因为需要 Roslyn 4.3 及以上版本。"/>
   </Target>
 </Project>

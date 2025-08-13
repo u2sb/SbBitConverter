@@ -1,7 +1,7 @@
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
-using System.Text;
 using static SbBitConverter.SourceGenerator.ConstTable;
 using static SbBitConverter.SourceGenerator.Utils;
 
@@ -9,21 +9,29 @@ namespace SbBitConverter.SourceGenerator;
 
 public static class SbBitConverterArrayGenerator
 {
-  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe, LanguageVersion languageVersion)
+  public static void Gen(
+    SourceProductionContext context,
+    INamedTypeSymbol structSymbol,
+    bool isUnsafe,
+    LanguageVersion languageVersion,
+    Compilation compilation)
   {
-    var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol, context.Compilation);
+    var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol, compilation);
     if (sbBitConverterArrayInfo is null) return;
 
-    var source = GenerateCodeForStruct(context, structSymbol, sbBitConverterArrayInfo, isUnsafe, languageVersion);
-
+    var source = GenerateCodeForStruct(structSymbol, sbBitConverterArrayInfo, isUnsafe, languageVersion, compilation);
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
     var namespaceName = isGlobalNamespace ? string.Empty : $"{structSymbol.ContainingNamespace.ToDisplayString()}_";
-    context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterArray.g.cs", SourceText.From(source, Encoding.UTF8));
+    context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterArray.g.cs",
+      SourceText.From(source, Encoding.UTF8));
   }
 
-  private static string GenerateCodeForStruct(GeneratorExecutionContext context, INamedTypeSymbol structSymbol,
+  private static string GenerateCodeForStruct(
+    INamedTypeSymbol structSymbol,
     SbBitConverterArrayInfo arrayInfo,
-    bool isUnsafe, LanguageVersion languageVersion)
+    bool isUnsafe,
+    LanguageVersion languageVersion,
+    Compilation compilation)
   {
     var structName = structSymbol.Name;
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
@@ -161,6 +169,7 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine($"        case {i}:");
       sb.AppendLine($"          return ref AsSpan()[{i}];");
     }
+
     sb.AppendLine("        default:");
     sb.AppendLine("          throw new IndexOutOfRangeException();");
     sb.AppendLine("      }");

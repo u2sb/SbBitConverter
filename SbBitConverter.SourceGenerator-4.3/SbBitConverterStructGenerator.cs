@@ -11,7 +11,12 @@ namespace SbBitConverter.SourceGenerator;
 
 public static class SbBitConverterStructGenerator
 {
-  public static void Gen(GeneratorExecutionContext context, INamedTypeSymbol structSymbol, bool isUnsafe, LanguageVersion languageVersion)
+  public static void Gen(
+    SourceProductionContext context,
+    INamedTypeSymbol structSymbol,
+    bool isUnsafe,
+    LanguageVersion languageVersion,
+    Compilation compilation)
   {
     var sbBitConverterAttr = structSymbol.GetAttribute(SbBitConverterStructAttributeName);
 
@@ -22,16 +27,20 @@ public static class SbBitConverterStructGenerator
 
     if (fieldInfos.Count == 0) return;
 
-    var source = GenerateCodeForStruct(context, structSymbol, encodingMode, fieldInfos, isUnsafe);
+    var source = GenerateCodeForStruct(structSymbol, encodingMode, fieldInfos, isUnsafe, compilation);
 
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
     var namespaceName = isGlobalNamespace ? string.Empty : $"{structSymbol.ContainingNamespace.ToDisplayString()}_";
-    context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterStruct.g.cs", SourceText.From(source, Encoding.UTF8));
+    context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterStruct.g.cs",
+      SourceText.From(source, Encoding.UTF8));
   }
 
-  private static string GenerateCodeForStruct(GeneratorExecutionContext context, INamedTypeSymbol structSymbol,
+  private static string GenerateCodeForStruct(
+    INamedTypeSymbol structSymbol,
     byte encodingMode,
-    List<FieldInfo> fieldInfos, bool isUnsafe)
+    List<FieldInfo> fieldInfos,
+    bool isUnsafe,
+    Compilation compilation)
   {
     var structName = structSymbol.Name;
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
@@ -42,8 +51,8 @@ public static class SbBitConverterStructGenerator
 
     foreach (var fieldInfo in fieldInfos)
     {
-      toTStringBuilder.AppendLine(BitConverterToTString(fieldInfo, context.Compilation));
-      toBytesStringBuilder.AppendLine(BitConverterToBytesString(fieldInfo, context.Compilation));
+      toTStringBuilder.AppendLine(BitConverterToTString(fieldInfo, compilation));
+      toBytesStringBuilder.AppendLine(BitConverterToBytesString(fieldInfo, compilation));
     }
 
 
