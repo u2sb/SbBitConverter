@@ -7,5 +7,5 @@ internal static class ConstTable
   public const string SbBitConverterArrayAttributeName = "SbBitConverter.Attributes.SbBitConverterArrayAttribute";
   public const string SbBitConverterStructAttributeName = "SbBitConverter.Attributes.SbBitConverterStructAttribute";
 
-  public const string BigAndSmallEndianEncodingModeEnum = "System.BigAndSmallEndianEncodingMode";
+  public const string BigAndSmallEndianEncodingModeEnum = "Sb.Extensions.System.BigAndSmallEndianEncodingMode";
 }

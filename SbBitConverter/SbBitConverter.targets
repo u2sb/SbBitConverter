@@ -2,7 +2,7 @@
   <!-- 收集本包的 Analyzer（源生成器） -->
   <Target Name="SbBitConverterGatherAnalyzers">
     <ItemGroup>
-      <SbBitConverterAnalyzer Include="@(Analyzer)" Condition="'%(Analyzer.NuGetPackageId)' == 'SbBitConverter'" />
+      <SbBitConverterAnalyzer Include="@(Analyzer)" Condition="'%(Analyzer.NuGetPackageId)' == 'SbBitConverter'"/>
     </ItemGroup>
   </Target>
 

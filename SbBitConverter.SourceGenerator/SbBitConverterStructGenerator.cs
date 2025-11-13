@@ -62,8 +62,9 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("using System;");
     sb.AppendLine("using System.Runtime.CompilerServices;");
     sb.AppendLine("using System.Runtime.InteropServices;");
-    sb.AppendLine("using static System.SbBitConverter;");
-    sb.AppendLine("using static System.SpanExtension;");
+    sb.AppendLine("using Sb.Extensions.System;");
+    sb.AppendLine("using static Sb.Extensions.System.SbBitConverter;");
+    sb.AppendLine("using static Sb.Extensions.System.SpanExtension;");
 
     if (!isGlobalNamespace)
     {

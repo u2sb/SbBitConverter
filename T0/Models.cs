@@ -1,6 +1,5 @@
-using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Sb.Extensions.System;
 using SbBitConverter.Attributes;
 
 namespace T0
