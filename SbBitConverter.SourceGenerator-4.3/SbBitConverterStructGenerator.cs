@@ -84,15 +84,6 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine();
 
     sb.AppendLine(
-      $"  public {structName}(ReadOnlySpan<ushort> data0, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
-    sb.AppendLine("  {");
-    sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
-    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
-    sb.AppendLine($"{toTStringBuilder}");
-    sb.AppendLine("  }");
-    sb.AppendLine();
-
-    sb.AppendLine(
       $"  public byte[] ToByteArray({BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    var data = new byte[Unsafe.SizeOf<{structName}>()];");

@@ -102,22 +102,9 @@ public static class SbBitConverterArrayGenerator
     for (var i = 0; i < arrayInfo.Length; i++)
     {
       var offset = elementSize * i;
-      var s0 = $"    this._item{i} = data.Slice({offset}, {elementSize}).ToT<{elementTypeName}>(mode);";
-      sb.AppendLine(s0);
-    }
-
-    sb.AppendLine("  }");
-    sb.AppendLine();
-
-    sb.AppendLine(
-      $"  public {structName}(ReadOnlySpan<ushort> data0, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
-    sb.AppendLine("  {");
-    sb.AppendLine("    var data = MemoryMarshal.AsBytes(data0);");
-    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      var offset = elementSize * i;
-      var s0 = $"    this._item{i} = data.Slice({offset}, {elementSize}).ToT<{elementTypeName}>(mode);";
+      var s0 = arrayInfo.IsBaseType
+        ? $"    this._item{i} = data.Slice({offset}, {elementSize}).ToT<{elementTypeName}>(mode);"
+        : $"    this._item{i} = new {elementTypeName}(data.Slice({offset}, {elementSize}), mode);";
       sb.AppendLine(s0);
     }
 
@@ -243,4 +230,9 @@ internal class SbBitConverterArrayInfo(
   public byte Mode { get; } = mode;
 
   public bool HasStructLayoutAttribute { get; } = hasStructLayoutAttribute;
+  
+  public bool IsBaseType => ElementType.SpecialType is SpecialType.System_Byte or SpecialType.System_SByte
+    or SpecialType.System_Int16 or SpecialType.System_UInt16 or SpecialType.System_Int32 or SpecialType.System_UInt32
+    or SpecialType.System_Int64 or SpecialType.System_UInt64 or SpecialType.System_Single or SpecialType.System_Double
+    or SpecialType.System_Char or SpecialType.System_IntPtr or SpecialType.System_UIntPtr;
 }
