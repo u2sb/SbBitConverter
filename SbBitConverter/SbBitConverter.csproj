@@ -49,6 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sb.Extensions" Version="0.2.8" />
+    <PackageReference Include="Sb.Extensions" Version="0.2.9" />
   </ItemGroup>
 </Project>

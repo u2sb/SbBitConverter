@@ -145,9 +145,9 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine("  }");
     sb.AppendLine();
-
-
+    
     sb.AppendLine($"  public int Length => {arrayInfo.Length};");
+    sb.AppendLine($"  public int Count => {arrayInfo.Length};");
     sb.AppendLine();
     sb.AppendLine($"  public ref {readonlyPrefix}{elementTypeName} this[int index]");
     sb.AppendLine("  {");
