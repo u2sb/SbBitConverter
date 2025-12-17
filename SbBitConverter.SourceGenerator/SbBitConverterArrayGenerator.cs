@@ -147,7 +147,7 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine("  }");
     sb.AppendLine();
-    
+
     sb.AppendLine($"  public int Length => {arrayInfo.Length};");
     sb.AppendLine($"  public int Count => {arrayInfo.Length};");
     sb.AppendLine();
@@ -189,8 +189,11 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine(
       $"  public {(isReadonlyStruct ? "ReadOnly" : string.Empty)}Span<{elementTypeName}> Slice(int start, int length)");
     sb.AppendLine("  {");
-    sb.AppendLine("    var span = AsSpan();");
-    sb.AppendLine("    return span.Slice(start, length);");
+    // sb.AppendLine("    var span = AsSpan();");
+    // sb.AppendLine("    return span.Slice(start, length);");
+    sb.AppendLine(
+      "    if(start < 0 || length < 0 || start + length > Length) throw new ArgumentOutOfRangeException();");
+    sb.AppendLine("    return CreateSpan(ref this[start], length);");
     sb.AppendLine("  }");
     sb.AppendLine();
 
