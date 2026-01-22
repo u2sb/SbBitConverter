@@ -1,4 +1,4 @@
-﻿// https://raw.githubusercontent.com/neosmart/AsyncLock/refs/heads/master/AsyncLock/AsyncLock.cs
+// https://raw.githubusercontent.com/neosmart/AsyncLock/refs/heads/master/AsyncLock/AsyncLock.cs
 
 using System;
 using System.Threading;
@@ -49,7 +49,7 @@ public sealed class AsyncLock
   /// </summary>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public Task<IDisposable> LockAsync(CancellationToken cancellationToken = default)
+  public ValueTask<InnerLock> LockAsync(CancellationToken cancellationToken = default)
   {
     var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
     _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
@@ -64,7 +64,8 @@ public sealed class AsyncLock
   /// <param name="timeout"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public async Task<bool> TryLockAsync(Action callback, TimeSpan timeout, CancellationToken cancellationToken = default)
+  public async ValueTask<bool> TryLockAsync(Action callback, TimeSpan timeout,
+    CancellationToken cancellationToken = default)
   {
     var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
     _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
@@ -76,7 +77,7 @@ public sealed class AsyncLock
     }
     finally
     {
-      disposableLock.Dispose();
+      disposableLock.Value.Dispose();
     }
 
     return true;
@@ -90,7 +91,7 @@ public sealed class AsyncLock
   /// <param name="timeout"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public async Task<bool> TryLockAsync(Func<Task> callback, TimeSpan timeout,
+  public async ValueTask<bool> TryLockAsync(Func<Task> callback, TimeSpan timeout,
     CancellationToken cancellationToken = default)
   {
     var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
@@ -103,7 +104,7 @@ public sealed class AsyncLock
     }
     finally
     {
-      disposableLock.Dispose();
+      disposableLock.Value.Dispose();
     }
 
     return true;
@@ -116,7 +117,7 @@ public sealed class AsyncLock
   /// <param name="callback"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public async Task<bool> TryLockAsync(Action callback, CancellationToken cancellationToken)
+  public async ValueTask<bool> TryLockAsync(Action callback, CancellationToken cancellationToken)
   {
     var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
     _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
@@ -128,7 +129,7 @@ public sealed class AsyncLock
     }
     finally
     {
-      disposableLock.Dispose();
+      disposableLock.Value.Dispose();
     }
 
     return true;
@@ -141,7 +142,7 @@ public sealed class AsyncLock
   /// <param name="callback"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public async Task<bool> TryLockAsync(Func<Task> callback, CancellationToken cancellationToken)
+  public async ValueTask<bool> TryLockAsync(Func<Task> callback, CancellationToken cancellationToken)
   {
     var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
     _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
@@ -153,7 +154,7 @@ public sealed class AsyncLock
     }
     finally
     {
-      disposableLock.Dispose();
+      disposableLock.Value.Dispose();
     }
 
     return true;
@@ -164,7 +165,7 @@ public sealed class AsyncLock
   /// </summary>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  public IDisposable Lock(CancellationToken cancellationToken = default)
+  public InnerLock Lock(CancellationToken cancellationToken = default)
   {
     var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
     // Increment the async stack counter to prevent a child task from getting
@@ -195,7 +196,7 @@ public sealed class AsyncLock
     }
     finally
     {
-      lockDisposable.Dispose();
+      lockDisposable.Value.Dispose();
     }
 
     return true;
@@ -219,112 +220,95 @@ public readonly struct InnerLock : IDisposable
     _oldThreadId = oldThreadId;
   }
 
-  internal async Task<IDisposable> ObtainLockAsync(CancellationToken cancellationToken = default)
+  internal ValueTask<InnerLock> ObtainLockAsync(CancellationToken cancellationToken = default)
+  {
+    if (_parent.Reentrancy.Wait(0))
+    {
+      if (InnerTryEnter())
+      {
+        _parent.OwningThreadId = AsyncLock.ThreadId;
+        _parent.Reentrancy.Release();
+        return new ValueTask<InnerLock>(this);
+      }
+
+      _parent.Reentrancy.Release();
+    }
+
+    return SlowPath(this, cancellationToken);
+  }
+
+  private static async ValueTask<InnerLock> SlowPath(InnerLock @lock, CancellationToken ct)
   {
     while (true)
     {
-      await _parent.Reentrancy.WaitAsync(cancellationToken).ConfigureAwait(false);
-      if (InnerTryEnter()) break;
-      // We need to wait for someone to leave the lock before trying again.
-      // We need to "atomically" obtain _retry and release _reentrancy, but there
-      // is no equivalent to a condition variable. Instead, we call *but don't await*
-      // _retry.WaitAsync(), then release the reentrancy lock, *then* await the saved task.
-      var waitTask = _parent.Retry.WaitAsync(cancellationToken).ConfigureAwait(false);
-      _parent.Reentrancy.Release();
+      await @lock._parent.Reentrancy.WaitAsync(ct).ConfigureAwait(false);
+      if (@lock.InnerTryEnter()) break;
+
+      var waitTask = @lock._parent.Retry.WaitAsync(ct).ConfigureAwait(false);
+      @lock._parent.Reentrancy.Release();
       await waitTask;
     }
 
-    // Reset the owning thread id after all await calls have finished, otherwise we
-    // could be resumed on a different thread and set an incorrect value.
-    _parent.OwningThreadId = AsyncLock.ThreadId;
-    _parent.Reentrancy.Release();
-    return this;
+    @lock._parent.OwningThreadId = AsyncLock.ThreadId;
+    @lock._parent.Reentrancy.Release();
+    return @lock;
   }
 
-  internal async Task<IDisposable?> TryObtainLockAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+  // 主入口：支持快路径
+  internal ValueTask<InnerLock?> TryObtainLockAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
   {
-    // In case of zero-timeout, don't even wait for protective lock contention
-    if (timeout == TimeSpan.Zero)
+    // 快速路径：尝试同步获取（零超时或极短超时）
+    if (timeout <= TimeSpan.Zero)
     {
-      await _parent.Reentrancy.WaitAsync(timeout, cancellationToken);
-      if (InnerTryEnter())
+      if (_parent.Reentrancy.Wait(timeout))
       {
-        // Reset the owning thread id after all await calls have finished, otherwise we
-        // could be resumed on a different thread and set an incorrect value.
-        _parent.OwningThreadId = AsyncLock.ThreadId;
+        if (InnerTryEnter())
+        {
+          _parent.OwningThreadId = AsyncLock.ThreadId;
+          _parent.Reentrancy.Release();
+          return new ValueTask<InnerLock?>(this);
+        }
+
         _parent.Reentrancy.Release();
-        return this;
       }
 
-      _parent.Reentrancy.Release();
-      return null;
+      return new ValueTask<InnerLock?>((InnerLock?)null);
     }
 
-    var now = DateTimeOffset.UtcNow;
-    var last = now;
-    var remainder = timeout;
-
-    // We need to wait for someone to leave the lock before trying again.
-    while (remainder > TimeSpan.Zero)
-    {
-      await _parent.Reentrancy.WaitAsync(remainder, cancellationToken).ConfigureAwait(false);
-      if (InnerTryEnter())
-      {
-        _parent.OwningThreadId = AsyncLock.ThreadId;
-        _parent.Reentrancy.Release();
-        return this;
-      }
-
-      _parent.Reentrancy.Release();
-
-      now = DateTimeOffset.UtcNow;
-      remainder -= now - last;
-      last = now;
-      if (remainder < TimeSpan.Zero)
-      {
-        _parent.Reentrancy.Release();
-        return null;
-      }
-
-      var waitTask = _parent.Retry.WaitAsync(remainder, cancellationToken).ConfigureAwait(false);
-      _parent.Reentrancy.Release();
-      if (!await waitTask) return null;
-
-      now = DateTimeOffset.UtcNow;
-      remainder -= now - last;
-      last = now;
-    }
-
-    return null;
+    // 慢路径：需要异步等待 + 超时管理
+    return TryWithTimeoutSlow(this, timeout, cancellationToken);
   }
 
-  internal async Task<IDisposable?> TryObtainLockAsync(CancellationToken cancellationToken = default)
+  private static async ValueTask<InnerLock?> TryWithTimeoutSlow(
+    InnerLock @lock, TimeSpan timeout, CancellationToken ct)
   {
+    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+    cts.CancelAfter(timeout);
+
     try
     {
-      while (true)
-      {
-        await _parent.Reentrancy.WaitAsync(cancellationToken).ConfigureAwait(false);
-        if (InnerTryEnter()) break;
-        // We need to wait for someone to leave the lock before trying again.
-        var waitTask = _parent.Retry.WaitAsync(cancellationToken).ConfigureAwait(false);
-        _parent.Reentrancy.Release();
-        await waitTask;
-      }
+      var result = await @lock.ObtainLockAsync(cts.Token).ConfigureAwait(false);
+      return result;
     }
     catch (OperationCanceledException)
     {
       return null;
     }
-
-    // Reset the owning thread id after all await calls have finished, otherwise we
-    // could be resumed on a different thread and set an incorrect value.
-    _parent.OwningThreadId = AsyncLock.ThreadId;
-    _parent.Reentrancy.Release();
-    return this;
   }
 
-  internal IDisposable ObtainLock(CancellationToken cancellationToken = default)
+  internal async ValueTask<InnerLock?> TryObtainLockAsync(CancellationToken cancellationToken = default)
+  {
+    try
+    {
+      return await ObtainLockAsync(cancellationToken).ConfigureAwait(false);
+    }
+    catch (OperationCanceledException)
+    {
+      return null;
+    }
+  }
+
+  internal InnerLock ObtainLock(CancellationToken cancellationToken = default)
   {
     while (true)
     {
@@ -346,7 +330,7 @@ public readonly struct InnerLock : IDisposable
     return this;
   }
 
-  internal IDisposable? TryObtainLock(TimeSpan timeout)
+  internal InnerLock? TryObtainLock(TimeSpan timeout)
   {
     // In case of zero-timeout, don't even wait for protective lock contention
     if (timeout == TimeSpan.Zero)
