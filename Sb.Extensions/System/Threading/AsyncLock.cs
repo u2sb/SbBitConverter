@@ -13,9 +13,9 @@ namespace Sb.Extensions.System.Threading;
 /// </summary>
 public sealed class AsyncLock
 {
-  internal const long UnlockedId = 0x00; // "owning" task id when unlocked
+  internal const int UnlockedId = 0x00; // "owning" task id when unlocked
 
-  private static long _asyncStackCounter;
+  private static int _asyncStackCounter;
 
   // An AsyncLocal<T> is not really the task-based equivalent to a ThreadLocal<T>, in that
   // it does not track the async flow (as the documentation describes) but rather it is
@@ -24,7 +24,7 @@ public sealed class AsyncLock
   // use it as a persistent async flow identifier, the value needs to be set at the outer-
   // most level and never touched internally.
 
-  private static readonly AsyncLocal<long> _asyncId = new();
+  private static readonly AsyncLocal<int> _asyncId = new();
   internal readonly SemaphoreSlim Reentrancy = new(1, 1);
 
   // We are using this SemaphoreSlim like a posix condition variable.
@@ -34,12 +34,12 @@ public sealed class AsyncLock
   // Ideally, this would be "friend" for access only from InnerLock, but
   // whatever.
   internal readonly SemaphoreSlim Retry = new(0, 1);
-  internal long OwningId = UnlockedId;
-  internal int OwningThreadId = (int)UnlockedId;
+  internal int OwningId = UnlockedId;
+  internal int OwningThreadId = UnlockedId;
 
   internal int Reentrances;
 
-  internal static long AsyncId => _asyncId.Value;
+  internal static int AsyncId => _asyncId.Value;
   internal static int ThreadId => Thread.CurrentThread.ManagedThreadId;
 
 
@@ -210,10 +210,10 @@ public sealed class AsyncLock
 public readonly struct InnerLock : IDisposable
 {
   private readonly AsyncLock _parent;
-  private readonly long _oldId;
+  private readonly int _oldId;
   private readonly int _oldThreadId;
 
-  internal InnerLock(AsyncLock parent, long oldId, int oldThreadId)
+  internal InnerLock(AsyncLock parent, int oldId, int oldThreadId)
   {
     _parent = parent;
     _oldId = oldId;
@@ -420,7 +420,7 @@ public readonly struct InnerLock : IDisposable
         // are in a nested stack call. We reset the owning id
         // only when the lock is fully unlocked.
         @this._parent.OwningId = AsyncLock.UnlockedId;
-        @this._parent.OwningThreadId = (int)AsyncLock.UnlockedId;
+        @this._parent.OwningThreadId = AsyncLock.UnlockedId;
       }
 
       // We can't place this within the _reentrances == 0 block above because we might
