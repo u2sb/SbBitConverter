@@ -24,6 +24,7 @@ public sealed class AsyncLock
   // use it as a persistent async flow identifier, the value needs to be set at the outer-
   // most level and never touched internally.
 
+  // ReSharper disable once InconsistentNaming
   private static readonly AsyncLocal<int> _asyncId = new();
   internal readonly SemaphoreSlim Reentrancy = new(1, 1);
 
