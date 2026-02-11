@@ -1,9 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-#if NETSTANDARD2_0
-
-#else
+#if !NETSTANDARD2_0
 using System.Runtime.InteropServices;
 #endif
 

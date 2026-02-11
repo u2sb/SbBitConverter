@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using CommunityToolkit.HighPerformance;
 
 namespace Sb.Extensions.System;
 
@@ -18,7 +19,7 @@ public enum BigAndSmallEndianEncodingMode : byte
   ///   小端模式
   /// </summary>
   DCBA = 0,
-  
+
   /// <summary>
   ///   大端模式
   /// </summary>
@@ -599,29 +600,6 @@ public static class SbBitConverter
     }
   }
 
-
-  /// <summary>
-  ///   Memory 转换
-  /// </summary>
-  /// <param name="source"></param>
-  /// <typeparam name="TFrom"></typeparam>
-  extension<TFrom>(in Memory<TFrom> source) where TFrom : unmanaged
-  {
-    /// <summary>
-    ///   Memory 转换
-    /// </summary>
-    /// <typeparam name="TTo"></typeparam>
-    /// <returns></returns>
-    public Memory<TTo> Cast<TTo>()
-      where TTo : unmanaged
-    {
-      if (typeof(TFrom) == typeof(TTo))
-        return (Memory<TTo>)(object)source;
-
-      return new CastMemoryManager<TFrom, TTo>(source).Memory;
-    }
-  }
-
   /// <summary>
   ///   通用 转换
   /// </summary>
@@ -1168,49 +1146,6 @@ public static class SbBitConverter
 
 #endif
   }
-
-  #region Memory转换
-
-  /// <summary>
-  /// </summary>
-  /// <typeparam name="TFrom"></typeparam>
-  /// <typeparam name="TTo"></typeparam>
-  /// <param name="memory"></param>
-  private sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> memory) : MemoryManager<TTo>
-    where TFrom : unmanaged
-    where TTo : unmanaged
-  {
-    /// <inheritdoc />
-    protected override void Dispose(bool disposing)
-    {
-    }
-
-    /// <inheritdoc />
-    public override Span<TTo> GetSpan()
-    {
-      return MemoryMarshal.Cast<TFrom, TTo>(memory.Span);
-    }
-
-    /// <inheritdoc />
-    public override MemoryHandle Pin(int elementIndex = 0)
-    {
-      var byteOffset = elementIndex * Unsafe.SizeOf<TTo>();
-      var shiftedOffset = Math.DivRem(byteOffset, Unsafe.SizeOf<TFrom>(), out var remainder);
-
-      if (remainder != 0)
-        throw new ArgumentException("The input index doesn't result in an aligned item access",
-          nameof(elementIndex));
-
-      return memory[shiftedOffset..].Pin();
-    }
-
-    /// <inheritdoc />
-    public override void Unpin()
-    {
-    }
-  }
-
-  #endregion
 
 #if NET8_0_OR_GREATER
   /// <summary>
