@@ -59,24 +59,6 @@ public static class SbBitConverterArrayGenerator
       sb.AppendLine("{");
     }
 
-    // if (isUnsafe)
-    // {
-    //   sb.AppendLine($"unsafe partial struct {structName}");
-    //   sb.AppendLine("{");
-    //   sb.Append("  [FieldOffset(0)]");
-    //   sb.AppendLine($"  public fixed byte source[{elementSize * arrayInfo.Length}];");
-    //
-    //   if (arrayInfo.ElementType.AllowUnsafeSource())
-    //   {
-    //     sb.Append("  [FieldOffset(0)]");
-    //     sb.AppendLine($"  public fixed {elementTypeName} elementSource[{arrayInfo.Length}];");
-    //   }
-    //
-    //   sb.AppendLine("}");
-    // }
-
-    // sb.AppendLine();
-
     if (!hasStructLayoutAttribute)
     {
       var pack = 1;
@@ -193,7 +175,9 @@ public static class SbBitConverterArrayGenerator
     // sb.AppendLine("    return span.Slice(start, length);");
     sb.AppendLine(
       "    if(start < 0 || length < 0 || start + length > Length) throw new ArgumentOutOfRangeException();");
-    sb.AppendLine("    return CreateSpan(ref this[start], length);");
+    sb.AppendLine(isReadonlyStruct
+      ? $"    return CreateReadOnlySpan(in this[start], length);"
+      : $"    return CreateSpan(ref this[start], length);");
     sb.AppendLine("  }");
     sb.AppendLine();
 

@@ -10,7 +10,7 @@ namespace T0
   }
 
   [SbBitConverterArray(typeof(MyStruct), 3, BigAndSmallEndianEncodingMode.ABCD, ElementSize = 8)]
-  public partial struct MyStructArray3
+  public readonly partial struct MyStructArray3
   {
   }
 
