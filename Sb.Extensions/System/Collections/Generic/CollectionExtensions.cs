@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -136,6 +137,48 @@ public static class CollectionExtensions
 
 #pragma warning restore CS0436
 #endif
+
+  extension<T>(ObservableCollection<T> collection)
+  {
+    public void AddRange(IEnumerable<T> items)
+    {
+      foreach (var item in items)
+      {
+        collection.Add(item);
+      }
+    }
+
+    public void AddRange(ReadOnlySpan<T> items)
+    {
+      foreach (var item in items)
+      {
+        collection.Add(item);
+      }
+    }
+
+    public void SetRange(IEnumerable<T> items)
+    {
+      var i = 0;
+      foreach (var item in items)
+      {
+        if (collection.Count > i)
+        {
+          collection[i] = item;
+        }
+        else
+        {
+          collection.Add(item);
+        }
+
+        i++;
+      }
+
+      while (collection.Count > i)
+      {
+        collection.RemoveAt(collection.Count - 1);
+      }
+    }
+  }
 }
 
 #if !NET5_0_OR_GREATER
