@@ -18,9 +18,12 @@ public static class SpanExtension
   /// <param name="source"></param>
   /// <param name="length"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static Span<T> CreateSpan<T>(scoped ref T source, int length = 1) where T : unmanaged
   {
 #if NETSTANDARD2_0
+    if (length < 0)
+      throw new ArgumentOutOfRangeException(nameof(length));
     unsafe
     {
       return new Span<T>(Unsafe.AsPointer(ref source), length);
@@ -37,9 +40,12 @@ public static class SpanExtension
   /// <param name="source"></param>
   /// <param name="length"></param>
   /// <returns></returns>
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static ReadOnlySpan<T> CreateReadOnlySpan<T>(scoped in T source, int length = 1) where T : unmanaged
   {
 #if NETSTANDARD2_0
+    if (length < 0)
+      throw new ArgumentOutOfRangeException(nameof(length));
     unsafe
     {
       return new ReadOnlySpan<T>(Unsafe.AsPointer(ref Unsafe.AsRef(in source)), length);
