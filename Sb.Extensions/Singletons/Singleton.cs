@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Sb.Extensions.System.Threading;
+using Microsoft.VisualStudio.Threading;
 
 namespace Sb.Extensions.Singletons;
 
@@ -15,7 +15,8 @@ public abstract class Singleton<T> where T : Singleton<T>
   /// <summary>
   ///   锁
   /// </summary>
-  protected AsyncLock Lock { get; } = new();
+  protected ReentrantSemaphore Lock { get; } =
+    ReentrantSemaphore.Create(1, null, ReentrantSemaphore.ReentrancyMode.Stack);
 
   /// <summary>
   ///   单例
@@ -24,7 +25,10 @@ public abstract class Singleton<T> where T : Singleton<T>
 
   private static T CreateInstance()
   {
-    if (Activator.CreateInstance(typeof(T), true) is T t) return t;
+    if (Activator.CreateInstance(typeof(T), true) is T t)
+    {
+      return t;
+    }
 
     throw new TargetInvocationException($"Could not create instance of type {typeof(T).FullName}", null);
   }
