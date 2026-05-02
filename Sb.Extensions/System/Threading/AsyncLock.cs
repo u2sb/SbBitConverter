@@ -13,9 +13,9 @@ namespace Sb.Extensions.System.Threading;
 /// </summary>
 public sealed class AsyncLock : IDisposable
 {
-  internal const int UnlockedId = 0x00; // "owning" task id when unlocked
+  internal const long UnlockedId = 0x00; // "owning" task id when unlocked
 
-  private static int _asyncStackCounter;
+  private static long _asyncStackCounter;
 
   // An AsyncLocal<T> is not really the task-based equivalent to a ThreadLocal<T>, in that
   // it does not track the async flow (as the documentation describes) but rather it is
@@ -25,7 +25,7 @@ public sealed class AsyncLock : IDisposable
   // most level and never touched internally.
 
   // ReSharper disable once InconsistentNaming
-  private static readonly AsyncLocal<int> _asyncId = new();
+  private static readonly AsyncLocal<long> _asyncId = new();
   internal readonly SemaphoreSlim Reentrancy = new(1, 1);
 
   // We are using this SemaphoreSlim like a posix condition variable.
@@ -37,13 +37,13 @@ public sealed class AsyncLock : IDisposable
   internal readonly SemaphoreSlim Retry = new(0, 1);
 
   private int _disposed;
-  internal int OwningId = UnlockedId;
-  internal int OwningThreadId = UnlockedId;
+  internal long OwningId = UnlockedId;
+  internal long OwningThreadId = UnlockedId;
 
   internal int Reentrances;
 
-  internal static int AsyncId => _asyncId.Value;
-  internal static int ThreadId => Thread.CurrentThread.ManagedThreadId;
+  internal static long AsyncId => _asyncId.Value;
+  internal static int ThreadId => Environment.CurrentManagedThreadId;
 
   /// <inheritdoc />
   public void Dispose()
@@ -70,7 +70,7 @@ public sealed class AsyncLock : IDisposable
   {
     ThrowIfDisposed();
 
-    var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
+    var @lock = new InnerLock(this, AsyncId, ThreadId);
     _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
     return @lock.ObtainLockAsync(cancellationToken);
   }
@@ -84,7 +84,7 @@ public sealed class AsyncLock : IDisposable
   {
     ThrowIfDisposed();
 
-    var @lock = new InnerLock(this, _asyncId.Value, ThreadId);
+    var @lock = new InnerLock(this, AsyncId, ThreadId);
     // Increment the async stack counter to prevent a child task from getting
     // the lock at the same time as a child thread.
     _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
@@ -96,13 +96,13 @@ public sealed class AsyncLock : IDisposable
 
 /// <summary>
 /// </summary>
-public readonly struct InnerLock : IDisposable
+public readonly struct InnerLock : IDisposable, IAsyncDisposable
 {
   private readonly AsyncLock _parent;
-  private readonly int _oldId;
+  private readonly long _oldId;
   private readonly int _oldThreadId;
 
-  internal InnerLock(AsyncLock parent, int oldId, int oldThreadId)
+  internal InnerLock(AsyncLock parent, long oldId, int oldThreadId)
   {
     _parent = parent;
     _oldId = oldId;
@@ -115,7 +115,7 @@ public readonly struct InnerLock : IDisposable
     {
       if (InnerTryEnter())
       {
-        _parent.OwningThreadId = AsyncLock.ThreadId;
+        Interlocked.Exchange(ref _parent.OwningThreadId, AsyncLock.ThreadId);
         _parent.Reentrancy.Release();
         return new ValueTask<InnerLock>(this);
       }
@@ -138,7 +138,7 @@ public readonly struct InnerLock : IDisposable
       await waitTask;
     }
 
-    @lock._parent.OwningThreadId = AsyncLock.ThreadId;
+    Interlocked.Exchange(ref @lock._parent.OwningThreadId, AsyncLock.ThreadId);
     @lock._parent.Reentrancy.Release();
     return @lock;
   }
@@ -169,21 +169,33 @@ public readonly struct InnerLock : IDisposable
   {
     if (synchronous)
     {
-      if (_parent.OwningThreadId == AsyncLock.UnlockedId)
-        _parent.OwningThreadId = AsyncLock.ThreadId;
-      else if (_parent.OwningThreadId != AsyncLock.ThreadId) return false;
-      _parent.OwningId = AsyncLock.AsyncId;
+      var owningThreadId = Interlocked.Read(ref _parent.OwningThreadId);
+      if (owningThreadId == AsyncLock.UnlockedId)
+        owningThreadId =
+          Interlocked.CompareExchange(ref _parent.OwningThreadId, AsyncLock.ThreadId, AsyncLock.UnlockedId);
+
+      if (owningThreadId != AsyncLock.UnlockedId && owningThreadId != AsyncLock.ThreadId) return false;
+      Interlocked.Exchange(ref _parent.OwningId, AsyncLock.AsyncId);
     }
     else
     {
-      if (_parent.OwningId == AsyncLock.UnlockedId)
-        _parent.OwningId = AsyncLock.AsyncId;
-      else if (_parent.OwningId != _oldId)
+      var owningId = Interlocked.Read(ref _parent.OwningId);
+      if (owningId == AsyncLock.UnlockedId)
+      {
+        if (Interlocked.CompareExchange(ref _parent.OwningId, AsyncLock.AsyncId, AsyncLock.UnlockedId) !=
+            AsyncLock.UnlockedId)
+          return false;
+      }
+      else if (owningId != _oldId)
         // Another thread currently owns the lock
+      {
         return false;
+      }
       else
         // Nested re-entrance
-        _parent.OwningId = AsyncLock.AsyncId;
+      {
+        Interlocked.Exchange(ref _parent.OwningId, AsyncLock.AsyncId);
+      }
     }
 
     // We can go in
@@ -195,22 +207,36 @@ public readonly struct InnerLock : IDisposable
   public void Dispose()
   {
     var @this = this;
+    @this._parent.Reentrancy.Wait();
+    Release(ref @this);
+  }
+
+  /// <inheritdoc />
+  public async ValueTask DisposeAsync()
+  {
+    var @this = this;
+    await @this._parent.Reentrancy.WaitAsync();
+    Release(ref @this);
+  }
+
+  private void Release(ref InnerLock @this)
+  {
     var oldId = _oldId;
     var oldThreadId = _oldThreadId;
-    @this._parent.Reentrancy.Wait();
+
     try
     {
       @this._parent.Reentrances -= 1;
 
       if (@this._parent.Reentrances == 0)
       {
-        @this._parent.OwningId = AsyncLock.UnlockedId;
-        @this._parent.OwningThreadId = AsyncLock.UnlockedId;
+        Interlocked.Exchange(ref @this._parent.OwningId, AsyncLock.UnlockedId);
+        Interlocked.Exchange(ref @this._parent.OwningThreadId, AsyncLock.UnlockedId);
       }
       else
       {
-        @this._parent.OwningId = oldId;
-        @this._parent.OwningThreadId = oldThreadId;
+        Interlocked.Exchange(ref @this._parent.OwningId, oldId);
+        Interlocked.Exchange(ref @this._parent.OwningThreadId, oldThreadId);
       }
 
       if (@this._parent.Retry.CurrentCount == 0) @this._parent.Retry.Release();
@@ -220,6 +246,6 @@ public readonly struct InnerLock : IDisposable
       @this._parent.Reentrancy.Release();
     }
   }
-
-  #endregion
 }
+
+#endregion

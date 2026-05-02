@@ -76,6 +76,24 @@ public readonly ref struct BitSpan
   }
 
   /// <summary>
+  ///  使用 BitArray 构造位段。
+  /// </summary>
+  /// <param name="bitArray"></param>
+  /// <exception cref="ArgumentNullException"></exception>
+  public BitSpan(BitArray bitArray)
+  {
+    if (bitArray == null) throw new ArgumentNullException(nameof(bitArray));
+
+    var buffer = new byte[(bitArray.Length + 7) >> 3];
+    if (buffer.Length > 0)
+      bitArray.CopyTo(buffer, 0);
+
+    _span = buffer;
+    Length = bitArray.Length;
+    _startBitOffset = 0;
+  }
+
+  /// <summary>
   /// </summary>
   public Span<byte> Span => _span;
 
@@ -641,6 +659,24 @@ public readonly ref struct ReadOnlyBitSpan
   {
     _span = MemoryMarshal.AsBytes(buffer);
     Length = _span.Length * 8;
+    _startBitOffset = 0;
+  }
+
+  /// <summary>
+  ///  使用 BitArray 构造只读位段。
+  /// </summary>
+  /// <param name="bitArray"></param>
+  /// <exception cref="ArgumentNullException"></exception>
+  public ReadOnlyBitSpan(BitArray bitArray)
+  {
+    if (bitArray == null) throw new ArgumentNullException(nameof(bitArray));
+
+    var buffer = new byte[(bitArray.Length + 7) >> 3];
+    if (buffer.Length > 0)
+      bitArray.CopyTo(buffer, 0);
+
+    _span = buffer;
+    Length = bitArray.Length;
     _startBitOffset = 0;
   }
 
