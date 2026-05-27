@@ -76,11 +76,15 @@ public readonly ref struct BitSpan
   }
 
   /// <summary>
-  ///  使用 BitArray 构造位段。
+  ///  从 <see cref="BitArray" /> 创建位段。
   /// </summary>
-  /// <param name="bitArray"></param>
-  /// <exception cref="ArgumentNullException"></exception>
-  public BitSpan(BitArray bitArray)
+  /// <remarks>
+  ///   注意：此方法会在堆上分配一个 <c>byte[]</c> 来拷贝 BitArray 的数据，
+  ///   因为 BitArray 不暴露其内部存储。对性能敏感的场景，优先使用 <see cref="BitSpan(Span{byte})" />。
+  /// </remarks>
+  /// <param name="bitArray">源 BitArray</param>
+  /// <exception cref="ArgumentNullException">bitArray 为 null</exception>
+  public static BitSpan FromBitArray(BitArray bitArray)
   {
     if (bitArray == null) throw new ArgumentNullException(nameof(bitArray));
 
@@ -88,9 +92,7 @@ public readonly ref struct BitSpan
     if (buffer.Length > 0)
       bitArray.CopyTo(buffer, 0);
 
-    _span = buffer;
-    Length = bitArray.Length;
-    _startBitOffset = 0;
+    return new BitSpan(buffer, bitArray.Length);
   }
 
   /// <summary>
@@ -663,11 +665,15 @@ public readonly ref struct ReadOnlyBitSpan
   }
 
   /// <summary>
-  ///  使用 BitArray 构造只读位段。
+  ///  从 <see cref="BitArray" /> 创建只读位段。
   /// </summary>
-  /// <param name="bitArray"></param>
-  /// <exception cref="ArgumentNullException"></exception>
-  public ReadOnlyBitSpan(BitArray bitArray)
+  /// <remarks>
+  ///   注意：此方法会在堆上分配一个 <c>byte[]</c> 来拷贝 BitArray 的数据，
+  ///   因为 BitArray 不暴露其内部存储。
+  /// </remarks>
+  /// <param name="bitArray">源 BitArray</param>
+  /// <exception cref="ArgumentNullException">bitArray 为 null</exception>
+  public static ReadOnlyBitSpan FromBitArray(BitArray bitArray)
   {
     if (bitArray == null) throw new ArgumentNullException(nameof(bitArray));
 
@@ -675,9 +681,7 @@ public readonly ref struct ReadOnlyBitSpan
     if (buffer.Length > 0)
       bitArray.CopyTo(buffer, 0);
 
-    _span = buffer;
-    Length = bitArray.Length;
-    _startBitOffset = 0;
+    return new ReadOnlyBitSpan(buffer, bitArray.Length);
   }
 
   /// <summary>

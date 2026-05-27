@@ -1,5 +1,3 @@
-// https://raw.githubusercontent.com/neosmart/AsyncLock/refs/heads/master/AsyncLock/AsyncLock.cs
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,242 +8,239 @@ using System.Threading.Tasks;
 namespace Sb.Extensions.System.Threading;
 
 /// <summary>
+///   高性能异步锁，支持可重入。
+///   无竞争时 CAS 原子获取（~15ns），零分配；竞争时 SemaphoreSlim 信号唤醒。
 /// </summary>
 public sealed class AsyncLock : IDisposable
 {
-  internal const long UnlockedId = 0x00; // "owning" task id when unlocked
-
-  private static long _asyncStackCounter;
-
-  // An AsyncLocal<T> is not really the task-based equivalent to a ThreadLocal<T>, in that
-  // it does not track the async flow (as the documentation describes) but rather it is
-  // associated with a stack snapshot. Mutation of the AsyncLocal in an await call does
-  // not change the value observed by the parent when the call returns, so if you want to
-  // use it as a persistent async flow identifier, the value needs to be set at the outer-
-  // most level and never touched internally.
-
-  // ReSharper disable once InconsistentNaming
-  private static readonly AsyncLocal<long> _asyncId = new();
-  internal readonly SemaphoreSlim Reentrancy = new(1, 1);
-
-  // We are using this SemaphoreSlim like a posix condition variable.
-  // We only want to wake waiters, one or more of whom will try to obtain
-  // a different lock to do their thing. So long as we can guarantee no
-  // wakes are missed, the number of awakees is not important.
-  // Ideally, this would be "friend" for access only from InnerLock, but
-  // whatever.
-  internal readonly SemaphoreSlim Retry = new(0, 1);
-
+  private readonly SemaphoreSlim _gate = new(1, 1);
+  private readonly SemaphoreSlim _signal = new(0, int.MaxValue);
+  private long _ownerKey;
+  private int _depth;
+  private long _nextKey = 1;
   private int _disposed;
-  internal long OwningId = UnlockedId;
-  internal long OwningThreadId = UnlockedId;
 
-  internal int Reentrances;
-
-  internal static long AsyncId => _asyncId.Value;
-  internal static int ThreadId => Environment.CurrentManagedThreadId;
+  private static readonly AsyncLocal<long> AsyncId = new();
 
   /// <inheritdoc />
   public void Dispose()
   {
     if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
 
-    Reentrancy.Dispose();
-    Retry.Dispose();
+    _gate.Wait();
+    try
+    {
+      _signal.Dispose();
+    }
+    finally
+    {
+      _gate.Dispose();
+    }
   }
 
   private void ThrowIfDisposed()
   {
     if (Volatile.Read(ref _disposed) == 1)
-      throw new ObjectDisposedException(nameof(AsyncLock), "AsyncLock has been disposed and can no longer be used.");
+      throw new ObjectDisposedException(nameof(AsyncLock));
   }
 
   /// <summary>
-  ///   Make sure InnerLock.LockAsync() does not use await, because an async function triggers a snapshot of
-  ///   the AsyncLocal value.
+  ///   异步获取锁。无竞争时同步返回，零分配。
   /// </summary>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public ValueTask<InnerLock> LockAsync(CancellationToken cancellationToken = default)
   {
     ThrowIfDisposed();
 
-    var @lock = new InnerLock(this, AsyncId, ThreadId);
-    _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
-    return @lock.ObtainLockAsync(cancellationToken);
+    var oldKey = AsyncId.Value;
+    var newKey = Interlocked.Increment(ref _nextKey);
+    AsyncId.Value = newKey;
+
+    var inner = new InnerLock(this, oldKey, newKey);
+
+    // 快速路径 1：可重入（当前上下文已持有锁）
+    if (oldKey != 0 && Volatile.Read(ref _ownerKey) == oldKey)
+    {
+      Interlocked.Increment(ref _depth);
+      _ownerKey = newKey;
+      return new ValueTask<InnerLock>(inner);
+    }
+
+    // 快速路径 2：CAS 无锁获取（零分配，仅一次原子操作）
+    if (Interlocked.CompareExchange(ref _ownerKey, newKey, 0) == 0)
+    {
+      _depth = 1;
+      return new ValueTask<InnerLock>(inner);
+    }
+
+    // 慢路径：SemaphoreSlim 信号等待
+    return SlowLockAsync(inner, newKey, cancellationToken);
   }
 
   /// <summary>
-  ///   Lock
+  ///   同步获取锁。
   /// </summary>
-  /// <param name="cancellationToken"></param>
-  /// <returns></returns>
   public InnerLock Lock(CancellationToken cancellationToken = default)
   {
     ThrowIfDisposed();
 
-    var @lock = new InnerLock(this, AsyncId, ThreadId);
-    // Increment the async stack counter to prevent a child task from getting
-    // the lock at the same time as a child thread.
-    _asyncId.Value = Interlocked.Increment(ref _asyncStackCounter);
-    return @lock.ObtainLock(cancellationToken);
-  }
-}
+    var oldKey = AsyncId.Value;
+    var newKey = Interlocked.Increment(ref _nextKey);
+    AsyncId.Value = newKey;
 
-#region InnerLock
+    var inner = new InnerLock(this, oldKey, newKey);
 
-/// <summary>
-/// </summary>
-public readonly struct InnerLock : IDisposable, IAsyncDisposable
-{
-  private readonly AsyncLock _parent;
-  private readonly long _oldId;
-  private readonly int _oldThreadId;
-
-  internal InnerLock(AsyncLock parent, long oldId, int oldThreadId)
-  {
-    _parent = parent;
-    _oldId = oldId;
-    _oldThreadId = oldThreadId;
-  }
-
-  internal ValueTask<InnerLock> ObtainLockAsync(CancellationToken cancellationToken = default)
-  {
-    if (_parent.Reentrancy.Wait(0))
+    // 快速路径 1：已持有锁（可重入）
+    if (oldKey != 0 && Volatile.Read(ref _ownerKey) == oldKey)
     {
-      if (InnerTryEnter())
-      {
-        Interlocked.Exchange(ref _parent.OwningThreadId, AsyncLock.ThreadId);
-        _parent.Reentrancy.Release();
-        return new ValueTask<InnerLock>(this);
-      }
-
-      _parent.Reentrancy.Release();
+      Interlocked.Increment(ref _depth);
+      _ownerKey = newKey;
+      return inner;
     }
 
-    return SlowPath(this, cancellationToken);
+    // 快速路径 2：CAS 无锁获取
+    if (Interlocked.CompareExchange(ref _ownerKey, newKey, 0) == 0)
+    {
+      _depth = 1;
+      return inner;
+    }
+
+    while (true)
+    {
+      _gate.Wait(cancellationToken);
+      if (TryEnter(newKey, oldKey))
+      {
+        _gate.Release();
+        return inner;
+      }
+
+      _gate.Release();
+      _signal.Wait(cancellationToken);
+    }
   }
 
-  private static async ValueTask<InnerLock> SlowPath(InnerLock @lock, CancellationToken ct)
+  private static async ValueTask<InnerLock> SlowLockAsync(InnerLock inner, long newKey, CancellationToken ct)
   {
     while (true)
     {
-      await @lock._parent.Reentrancy.WaitAsync(ct).ConfigureAwait(false);
-      if (@lock.InnerTryEnter()) break;
-
-      var waitTask = @lock._parent.Retry.WaitAsync(ct).ConfigureAwait(false);
-      @lock._parent.Reentrancy.Release();
-      await waitTask;
-    }
-
-    Interlocked.Exchange(ref @lock._parent.OwningThreadId, AsyncLock.ThreadId);
-    @lock._parent.Reentrancy.Release();
-    return @lock;
-  }
-
-  internal InnerLock ObtainLock(CancellationToken cancellationToken = default)
-  {
-    while (true)
-    {
-      _parent.Reentrancy.Wait(cancellationToken);
-      if (InnerTryEnter(true))
+      await inner.Parent._gate.WaitAsync(ct).ConfigureAwait(false);
+      if (inner.Parent.TryEnter(newKey, inner.OldKey))
       {
-        _parent.Reentrancy.Release();
-        break;
+        inner.Parent._gate.Release();
+        return inner;
       }
 
-      // We need to wait for someone to leave the lock before trying again.
-      var waitTask = _parent.Retry.WaitAsync(cancellationToken);
-      _parent.Reentrancy.Release();
-      // This should be safe since the task we are awaiting doesn't need to make progress
-      // itself to complete - it will be completed by another thread altogether. cf SemaphoreSlim internals.
-      waitTask.GetAwaiter().GetResult();
+      inner.Parent._gate.Release();
+      await inner.Parent._signal.WaitAsync(ct).ConfigureAwait(false);
     }
-
-    return this;
   }
 
-  private bool InnerTryEnter(bool synchronous = false)
+  private bool TryEnter(long newKey, long oldKey)
   {
-    if (synchronous)
+    if (_ownerKey == 0)
     {
-      var owningThreadId = Interlocked.Read(ref _parent.OwningThreadId);
-      if (owningThreadId == AsyncLock.UnlockedId)
-        owningThreadId =
-          Interlocked.CompareExchange(ref _parent.OwningThreadId, AsyncLock.ThreadId, AsyncLock.UnlockedId);
+      _ownerKey = newKey;
+      _depth = 1;
+      return true;
+    }
 
-      if (owningThreadId != AsyncLock.UnlockedId && owningThreadId != AsyncLock.ThreadId) return false;
-      Interlocked.Exchange(ref _parent.OwningId, AsyncLock.AsyncId);
+    if (_ownerKey == oldKey)
+    {
+      _ownerKey = newKey;
+      _depth++;
+      return true;
+    }
+
+    return false;
+  }
+
+  /// <summary>
+  ///   释放锁。必须在持有 _gate 时调用。
+  /// </summary>
+  internal void ReleaseLock(long oldKey, long newKey)
+  {
+    // 防护双重释放（包括 struct 复制场景）：_depth == 0 表示锁未被持有
+    if (_depth == 0) return;
+
+    // 所有权校验：防止旧 InnerLock 副本窃取他人持有的锁
+    if (_ownerKey != newKey) return;
+
+    _depth--;
+    if (_depth == 0)
+    {
+      _ownerKey = 0;
+      _signal.Release();
     }
     else
     {
-      var owningId = Interlocked.Read(ref _parent.OwningId);
-      if (owningId == AsyncLock.UnlockedId)
-      {
-        if (Interlocked.CompareExchange(ref _parent.OwningId, AsyncLock.AsyncId, AsyncLock.UnlockedId) !=
-            AsyncLock.UnlockedId)
-          return false;
-      }
-      else if (owningId != _oldId)
-        // Another thread currently owns the lock
-      {
-        return false;
-      }
-      else
-        // Nested re-entrance
-      {
-        Interlocked.Exchange(ref _parent.OwningId, AsyncLock.AsyncId);
-      }
+      _ownerKey = oldKey;
     }
-
-    // We can go in
-    _parent.Reentrances += 1;
-    return true;
   }
 
-  /// <inheritdoc />
-  public void Dispose()
-  {
-    var @this = this;
-    @this._parent.Reentrancy.Wait();
-    Release(ref @this);
-  }
+  #region InnerLock
 
-  /// <inheritdoc />
-  public async ValueTask DisposeAsync()
+  /// <summary>
+  ///   锁的句柄，通过 <see cref="IDisposable.Dispose" /> 或 <see cref="IAsyncDisposable.DisposeAsync" /> 释放。
+  /// </summary>
+  public struct InnerLock : IDisposable, IAsyncDisposable
   {
-    var @this = this;
-    await @this._parent.Reentrancy.WaitAsync();
-    Release(ref @this);
-  }
+    internal readonly AsyncLock Parent;
+    internal readonly long OldKey;
+    internal readonly long NewKey;
 
-  private void Release(ref InnerLock @this)
-  {
-    var oldId = _oldId;
-    var oldThreadId = _oldThreadId;
-
-    try
+    internal InnerLock(AsyncLock parent, long oldKey, long newKey)
     {
-      @this._parent.Reentrances -= 1;
-
-      if (@this._parent.Reentrances == 0)
-      {
-        Interlocked.Exchange(ref @this._parent.OwningId, AsyncLock.UnlockedId);
-        Interlocked.Exchange(ref @this._parent.OwningThreadId, AsyncLock.UnlockedId);
-      }
-      else
-      {
-        Interlocked.Exchange(ref @this._parent.OwningId, oldId);
-        Interlocked.Exchange(ref @this._parent.OwningThreadId, oldThreadId);
-      }
-
-      if (@this._parent.Retry.CurrentCount == 0) @this._parent.Retry.Release();
+      Parent = parent;
+      OldKey = oldKey;
+      NewKey = newKey;
     }
-    finally
+
+    /// <inheritdoc />
+    public void Dispose()
     {
-      @this._parent.Reentrancy.Release();
+      var parent = Parent;
+      try
+      {
+        parent._gate.Wait();
+      }
+      catch (ObjectDisposedException)
+      {
+        return;
+      }
+
+      try
+      {
+        parent.ReleaseLock(OldKey, NewKey);
+      }
+      finally
+      {
+        parent._gate.Release();
+      }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+      var parent = Parent;
+      try
+      {
+        await parent._gate.WaitAsync().ConfigureAwait(false);
+      }
+      catch (ObjectDisposedException)
+      {
+        return;
+      }
+
+      try
+      {
+        parent.ReleaseLock(OldKey, NewKey);
+      }
+      finally
+      {
+        parent._gate.Release();
+      }
     }
   }
+
+  #endregion
 }
 
-#endregion

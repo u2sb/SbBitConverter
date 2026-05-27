@@ -671,6 +671,9 @@ public static class SbBitConverter
     public void WriteTo(scoped in Span<byte> destination, BigAndSmallEndianEncodingMode mode)
     {
       var size = Unsafe.SizeOf<T>();
+      if (destination.Length < size)
+        throw new ArgumentException("Destination span is too short.", nameof(destination));
+
 #if NET8_0_OR_GREATER
       MemoryMarshal.Write(destination, in source);
 #else
@@ -903,8 +906,7 @@ public static class SbBitConverter
     public void ApplyEndianness(BigAndSmallEndianEncodingMode mode)
     {
       // 如果是单字节，也就是 byte 类型，直接返回
-      var size = source.Length;
-      if (size == 1) return;
+      if (source.Length == 1) return;
 
       if (source.Length % 2 != 0)
         throw new ArgumentException("Data length must be even.");

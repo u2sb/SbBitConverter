@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
@@ -10,7 +12,7 @@ namespace Sb.Extensions.System.Buffers.RingBuffers;
 ///   环形缓冲区，固定大小，支持覆盖写入
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class FixedSizeRingBuffer<T> : IEnumerable<T> where T : unmanaged
+public class FixedSizeRingBuffer<T> : IEnumerable<T>, IReadOnlyList<T> where T : unmanaged
 {
   private readonly int _mask;
   private T[] _buffer;
@@ -22,6 +24,11 @@ public class FixedSizeRingBuffer<T> : IEnumerable<T> where T : unmanaged
   /// <param name="capacity"></param>
   public FixedSizeRingBuffer(int capacity = 1024)
   {
+    if (capacity <= 0)
+    {
+      throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be greater than 0.");
+    }
+
     _buffer = new T[CalculateCapacity(capacity)];
     _head = 0;
     Count = 0;
@@ -195,6 +202,8 @@ public class FixedSizeRingBuffer<T> : IEnumerable<T> where T : unmanaged
     }
   }
 
+  T IReadOnlyList<T>.this[int index] => this[index];
+
   /// <summary>
   ///   清空缓冲区
   /// </summary>
@@ -211,7 +220,7 @@ public class FixedSizeRingBuffer<T> : IEnumerable<T> where T : unmanaged
   {
     for (var i = 0; i < Count; i++)
     {
-      if (this[i].Equals(item))
+      if (EqualityComparer<T>.Default.Equals(this[i], item))
       {
         return i;
       }
@@ -357,6 +366,98 @@ public class FixedSizeRingBuffer<T> : IEnumerable<T> where T : unmanaged
   }
 
   #endregion
+
+  #region Stream 操作
+
+  /// <summary>
+  ///   从 <see cref="Stream" /> 读取数据到缓冲区末尾（仅适用于 <c>FixedSizeRingBuffer&lt;byte&gt;</c>）
+  /// </summary>
+  /// <param name="stream">要读取的流</param>
+  /// <returns>实际读取的字节数</returns>
+  /// <exception cref="InvalidOperationException">当 <typeparamref name="T" /> 不是 <see cref="byte" /> 时抛出</exception>
+  public int ReadFromStream(Stream stream)
+  {
+    if (typeof(T) != typeof(byte))
+    {
+      throw new InvalidOperationException("ReadFromStream is only supported for FixedSizeRingBuffer<byte>.");
+    }
+
+    var available = Capacity - Count;
+    if (available == 0)
+    {
+      return 0;
+    }
+
+    var buffer = Unsafe.As<byte[]>(_buffer);
+    var tail = (_head + Count) & _mask;
+    var totalRead = 0;
+
+    // 第一段：从 tail 到缓冲区末尾
+    var firstLen = Math.Min(available, _buffer.Length - tail);
+    var read = stream.Read(buffer, tail, firstLen);
+    if (read > 0)
+    {
+      totalRead += read;
+      Count += read;
+    }
+
+    if (read < firstLen)
+    {
+      return totalRead;
+    }
+
+    // 第二段：从缓冲区开头继续（环绕写入）
+    var secondLen = available - firstLen;
+    if (secondLen > 0)
+    {
+      read = stream.Read(buffer, 0, secondLen);
+      if (read > 0)
+      {
+        totalRead += read;
+        Count += read;
+      }
+    }
+
+    return totalRead;
+  }
+
+  /// <summary>
+  ///   将缓冲区中的所有数据写入 <see cref="Stream" />（仅适用于 <c>FixedSizeRingBuffer&lt;byte&gt;</c>）
+  /// </summary>
+  /// <param name="stream">要写入的流</param>
+  /// <exception cref="InvalidOperationException">当 <typeparamref name="T" /> 不是 <see cref="byte" /> 时抛出</exception>
+  public void WriteToStream(Stream stream)
+  {
+    if (typeof(T) != typeof(byte))
+    {
+      throw new InvalidOperationException("WriteToStream is only supported for FixedSizeRingBuffer<byte>.");
+    }
+
+    if (Count == 0)
+    {
+      return;
+    }
+
+    var tail = (_head + Count) & _mask;
+    var buffer = Unsafe.As<byte[]>(_buffer);
+
+    if (tail > _head)
+    {
+      // 数据连续，未绕圈
+      stream.Write(buffer, _head, Count);
+    }
+    else
+    {
+      // 数据绕圈，分两段写入
+      stream.Write(buffer, _head, _buffer.Length - _head);
+      if (tail > 0)
+      {
+        stream.Write(buffer, 0, tail);
+      }
+    }
+  }
+
+  #endregion
 }
 
 /// <summary>
@@ -413,7 +514,7 @@ public readonly ref struct RingBufferSpan<T> where T : unmanaged
 
     if (!Second.IsEmpty)
     {
-      Second.CopyTo(destination.Slice(First.Length, destination.Length - First.Length));
+      Second.CopyTo(destination.Slice(First.Length, Second.Length));
     }
   }
 
