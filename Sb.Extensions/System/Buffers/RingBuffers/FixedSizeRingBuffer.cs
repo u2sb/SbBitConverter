@@ -514,7 +514,7 @@ public readonly ref struct RingBufferSpan<T> where T : unmanaged
 
     if (!Second.IsEmpty)
     {
-      Second.CopyTo(destination.Slice(First.Length, Second.Length));
+      Second.CopyTo(destination[First.Length..]);
     }
   }
 
