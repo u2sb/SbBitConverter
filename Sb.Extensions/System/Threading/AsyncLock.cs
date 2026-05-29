@@ -181,7 +181,7 @@ public sealed class AsyncLock : IDisposable
   /// <summary>
   ///   锁的句柄，通过 <see cref="IDisposable.Dispose" /> 或 <see cref="IAsyncDisposable.DisposeAsync" /> 释放。
   /// </summary>
-  public struct InnerLock : IDisposable, IAsyncDisposable
+  public readonly struct InnerLock : IDisposable, IAsyncDisposable
   {
     internal readonly AsyncLock Parent;
     internal readonly long OldKey;
