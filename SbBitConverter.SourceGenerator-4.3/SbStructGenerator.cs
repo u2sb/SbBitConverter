@@ -39,7 +39,7 @@ public class SbStructGenerator : IIncrementalGenerator
         : LanguageVersion.CSharp7;
 
       SbBitConverterStructGenerator.Gen(spc, x.Symbol!, isUnsafe, languageVersion, x.Compilation);
-      SbBitConverterArrayGenerator.Gen(spc, x.Symbol!, isUnsafe, languageVersion, x.Compilation);
+      SbBitConverterArrayGenerator.Gen(spc, x.Symbol!, isUnsafe, x.Compilation);
     });
   }
 }

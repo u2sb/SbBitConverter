@@ -4,20 +4,31 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<LangVersion>12.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" />
     <ProjectReference Include="..\SbBitConverter\SbBitConverter.csproj" />
   </ItemGroup>
 
-	<ItemGroup>
-		<Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
-	</ItemGroup>
-
-	<!-- <ItemGroup> -->
-	<!--   <PackageReference Include="SbBitConverter" Version="0.0.2" /> -->
-	<!-- </ItemGroup> -->
+  <ItemGroup>
+    <Analyzer Include="..\SbBitConverter.SourceGenerator\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll" />
+  </ItemGroup>
 
 </Project>

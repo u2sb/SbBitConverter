@@ -13,13 +13,12 @@ public static class SbBitConverterArrayGenerator
     SourceProductionContext context,
     INamedTypeSymbol structSymbol,
     bool isUnsafe,
-    LanguageVersion languageVersion,
     Compilation compilation)
   {
     var sbBitConverterArrayInfo = GetSbBitConverterInfo(structSymbol, compilation);
     if (sbBitConverterArrayInfo is null) return;
 
-    var source = GenerateCodeForStruct(structSymbol, sbBitConverterArrayInfo, isUnsafe, languageVersion, compilation);
+    var source = GenerateCodeForStruct(structSymbol, sbBitConverterArrayInfo, isUnsafe, compilation);
     var isGlobalNamespace = structSymbol.ContainingNamespace.IsGlobalNamespace;
     var namespaceName = isGlobalNamespace ? string.Empty : $"{structSymbol.ContainingNamespace.ToDisplayString()}_";
     context.AddSource($"{namespaceName}{structSymbol.Name}_SbBitConverterArray.g.cs",
@@ -30,7 +29,6 @@ public static class SbBitConverterArrayGenerator
     INamedTypeSymbol structSymbol,
     SbBitConverterArrayInfo arrayInfo,
     bool isUnsafe,
-    LanguageVersion languageVersion,
     Compilation compilation)
   {
     var structName = structSymbol.Name;
@@ -138,21 +136,7 @@ public static class SbBitConverterArrayGenerator
     sb.AppendLine("    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
     sb.AppendLine("    get");
     sb.AppendLine("    {");
-    sb.AppendLine("      switch (index)");
-    sb.AppendLine("      {");
-    for (var i = 0; i < arrayInfo.Length; i++)
-    {
-      sb.AppendLine($"        case {i}:");
-      sb.AppendLine(
-        languageVersion >= LanguageVersion.CSharp12
-          ? $"          return ref Unsafe.AsRef(in _item{i});"
-          : $"          return ref AsSpan()[{i}];"
-      );
-    }
-
-    sb.AppendLine("        default:");
-    sb.AppendLine("          throw new IndexOutOfRangeException();");
-    sb.AppendLine("      }");
+    sb.AppendLine($"      return ref AsSpan()[index];");
     sb.AppendLine("    }");
     sb.AppendLine("  }");
     sb.AppendLine();

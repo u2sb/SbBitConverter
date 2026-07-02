@@ -82,6 +82,8 @@ internal static class Utils
   /// </summary>
   public static bool IsKnownUnmanagedType(ITypeSymbol typeSymbol)
   {
+    if (typeSymbol.TypeKind == TypeKind.Enum) return true;
+
     return typeSymbol.SpecialType switch
     {
       SpecialType.System_Byte or SpecialType.System_SByte or SpecialType.System_Boolean
