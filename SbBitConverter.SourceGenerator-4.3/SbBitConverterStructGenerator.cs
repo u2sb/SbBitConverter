@@ -48,11 +48,13 @@ public static class SbBitConverterStructGenerator
 
     var toTStringBuilder = new StringBuilder();
     var toBytesStringBuilder = new StringBuilder();
+    var readFromBytesStringBuilder = new StringBuilder();
 
     foreach (var fieldInfo in fieldInfos)
     {
       toTStringBuilder.AppendLine(BitConverterToTString(fieldInfo, compilation));
       toBytesStringBuilder.AppendLine(BitConverterToBytesString(fieldInfo, compilation));
+      readFromBytesStringBuilder.AppendLine(BitConverterReadFromBytesString(fieldInfo, compilation));
     }
 
 
@@ -61,7 +63,6 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("#pragma warning disable");
     sb.AppendLine("using System;");
     sb.AppendLine("using System.Runtime.CompilerServices;");
-    sb.AppendLine("using System.Runtime.InteropServices;");
     sb.AppendLine("using Sb.Extensions.System;");
     sb.AppendLine("using static Sb.Extensions.System.SbBitConverter;");
     sb.AppendLine("using static Sb.Extensions.System.SpanExtension;");
@@ -87,8 +88,7 @@ public static class SbBitConverterStructGenerator
       $"  public byte[] ToByteArray({BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    var data = new byte[Unsafe.SizeOf<{structName}>()];");
-    sb.AppendLine("    var span = data.AsSpan();");
-    sb.AppendLine("    WriteTo(span, mode);");
+    sb.AppendLine("    WriteTo(data, mode);");
     sb.AppendLine("    return data;");
     sb.AppendLine("  }");
     sb.AppendLine();
@@ -99,6 +99,15 @@ public static class SbBitConverterStructGenerator
     sb.AppendLine("  {");
     sb.AppendLine($"    CheckLength(span, Unsafe.SizeOf<{structName}>());");
     sb.AppendLine($"{toBytesStringBuilder}");
+    sb.AppendLine("  }");
+    sb.AppendLine();
+
+    sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(
+      $"  public void ReadFromBytes(ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){encodingMode})");
+    sb.AppendLine("  {");
+    sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
+    sb.AppendLine($"{readFromBytesStringBuilder}");
     sb.AppendLine("  }");
     sb.AppendLine();
 
@@ -115,7 +124,7 @@ public static class SbBitConverterStructGenerator
     return size switch
     {
       0 =>
-        $"    this.{fieldInfo.Name} = new {fieldInfo.Type.ToDisplayString()}(data.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
+        $"    this.{fieldInfo.Name} = default; this.{fieldInfo.Name}.ReadFromBytes(data.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
       1 or 2 or 4 or 8 =>
         $"    this.{fieldInfo.Name} = data.Slice({fieldInfo.Offset}, {size}).ToT<{fieldInfo.Type.ToDisplayString()}>(mode);",
       _ => string.Empty
@@ -132,6 +141,21 @@ public static class SbBitConverterStructGenerator
         $"    this.{fieldInfo.Name}.WriteTo(span.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{fieldInfo.Type.ToDisplayString()}>()), mode);",
       1 or 2 or 4 or 8 =>
         $"    this.{fieldInfo.Name}.WriteTo<{fieldInfo.Type.ToDisplayString()}>(span.Slice({fieldInfo.Offset}, {size}), mode);",
+      _ => string.Empty
+    };
+  }
+
+  private static string BitConverterReadFromBytesString(FieldInfo fieldInfo, Compilation compilation)
+  {
+    var size = SizeOfType(fieldInfo.Type, compilation);
+    var typeName = fieldInfo.Type.ToDisplayString();
+
+    return size switch
+    {
+      0 =>
+        $"    this.{fieldInfo.Name}.ReadFromBytes(data.Slice({fieldInfo.Offset}, Unsafe.SizeOf<{typeName}>()), mode);",
+      1 or 2 or 4 or 8 =>
+        $"    this.{fieldInfo.Name} = data.Slice({fieldInfo.Offset}, {size}).ToT<{typeName}>(mode);",
       _ => string.Empty
     };
   }

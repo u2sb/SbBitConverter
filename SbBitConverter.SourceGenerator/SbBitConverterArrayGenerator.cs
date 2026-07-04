@@ -83,9 +83,13 @@ public static class SbBitConverterArrayGenerator
     {
       var offset = elementSize * i;
 
-      var s0 = arrayInfo.IsBaseType
-        ? $"    this._item{i} = data.Slice({offset}, {elementSize}).ToT<{elementTypeName}>(mode);"
-        : $"    this._item{i} = new {elementTypeName}(data.Slice({offset}, {elementSize}), mode);";
+      string s0;
+      if (arrayInfo.IsBaseType)
+        s0 = $"    this._item{i} = data.Slice({offset}, {elementSize}).ToT<{elementTypeName}>(mode);";
+      else if (isReadonlyStruct)
+        s0 = $"    this._item{i} = new {elementTypeName}(data.Slice({offset}, {elementSize}), mode);";
+      else
+        s0 = $"    this._item{i} = default; this._item{i}.ReadFromBytes(data.Slice({offset}, {elementSize}), mode);";
 
       sb.AppendLine(s0);
     }
@@ -106,8 +110,7 @@ public static class SbBitConverterArrayGenerator
       $"  public byte[] ToByteArray({BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
     sb.AppendLine("  {");
     sb.AppendLine($"    var data = new byte[Unsafe.SizeOf<{structName}>()];");
-    sb.AppendLine("    var span = data.AsSpan();");
-    sb.AppendLine("    WriteTo(span, mode);");
+    sb.AppendLine("    WriteTo(data, mode);");
     sb.AppendLine("    return data;");
     sb.AppendLine("  }");
     sb.AppendLine();
@@ -127,6 +130,23 @@ public static class SbBitConverterArrayGenerator
 
     sb.AppendLine("  }");
     sb.AppendLine();
+
+    if (!isReadonlyStruct)
+    {
+      sb.AppendLine("  [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+      sb.AppendLine(
+        $"  public void ReadFromBytes(ReadOnlySpan<byte> data, {BigAndSmallEndianEncodingModeEnum} mode = ({BigAndSmallEndianEncodingModeEnum}){arrayInfo.Mode})");
+      sb.AppendLine("  {");
+      sb.AppendLine($"    CheckLength(data, Unsafe.SizeOf<{structName}>());");
+      for (var i = 0; i < arrayInfo.Length; i++)
+      {
+        var offset = elementSize * i;
+        var s0 = $"    this._item{i}.ReadFromBytes(data.Slice({offset}, {elementSize}), mode);";
+        sb.AppendLine(s0);
+      }
+      sb.AppendLine("  }");
+      sb.AppendLine();
+    }
 
     sb.AppendLine($"  public int Length => {arrayInfo.Length};");
     sb.AppendLine($"  public int Count => {arrayInfo.Length};");
@@ -158,7 +178,7 @@ public static class SbBitConverterArrayGenerator
     // sb.AppendLine("    var span = AsSpan();");
     // sb.AppendLine("    return span.Slice(start, length);");
     sb.AppendLine(
-      "    if(start < 0 || length < 0 || start + length > Length) throw new ArgumentOutOfRangeException();");
+      "    if(start < 0 || length < 0 || start + length > Length) throw new ArgumentOutOfRangeException(nameof(start));");
     sb.AppendLine(isReadonlyStruct
       ? $"    return CreateReadOnlySpan(in this[start], length);"
       : $"    return CreateSpan(ref this[start], length);");
