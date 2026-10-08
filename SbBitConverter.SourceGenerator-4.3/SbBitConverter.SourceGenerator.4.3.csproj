@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Roslyn 4.3 API 分支：与 4.8 分支代码同构（共享逻辑经文件镜像维护）。
+       CPM 默认版本为 4.8.0，此处用 VersionOverride 钉住 4.3.1。 -->
+
   <PropertyGroup>
     <AssemblyName>SbBitConverter.SourceGenerator</AssemblyName>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,10 +14,26 @@
     <DevelopmentDependency>true</DevelopmentDependency>
     <IsRoslynComponent>true</IsRoslynComponent>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- RS1033 不识别以 CJK 标点「。」结尾的中文诊断说明，故抑制 -->
+    <NoWarn>$(NoWarn);RS1033</NoWarn>
   </PropertyGroup>
 
+  <!-- 分析器发布跟踪（消除 RS2008），使诊断的增删改可被追踪 -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1"/>
+    <AdditionalFiles Include="Abstractions\AnalyzerReleases.Shipped.md"/>
+    <AdditionalFiles Include="Abstractions\AnalyzerReleases.Unshipped.md"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="4.3.1" />
+    <!-- 显式钉住分析器版本，避免随 CSharp 包的 nuspec 传递依赖漂移 -->
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- 供生成器测试程序集访问 internal 模型层（纯数据单测） -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="SbBitConverter.SourceGenerator.Tests" />
   </ItemGroup>
 
   <ItemGroup>

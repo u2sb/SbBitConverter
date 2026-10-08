@@ -64,78 +64,69 @@ public static class CollectionExtensions
 #endif
 
 #if !NET8_0_OR_GREATER
-#pragma warning disable CS0436
 
-  // CollectionExtensions.AddRange
+  // List<T>.AddRange(ReadOnlySpan) / InsertRange(int, ReadOnlySpan) polyfill。
+  // ⚠️ 实现策略（经 net48 实测）：
+  //   - **不做 int 字段（_size）布局叠加** —— .NET Framework CLR 的 auto-layout 会重排
+  //     polyfill 类型的 int 字段，导致读写静默错位（详见 CollectionsMarshal.cs 注释）；
+  //   - 容量不足时仅对**首个引用字段（内部数组）**做叠加扩容（该偏移在 net48 实测可靠），
+  //     再通过公开的 Add/Insert 逐项写入，保证 _size/_version 由运行时自身维护。
+  //   - 逐项 Add 相比 BCL IEnumerable 路径省去了枚举器分配与接口虚调用。
+
   extension<T>(List<T> list)
   {
     public void AddRange(ReadOnlySpan<T> source)
     {
-      if (!source.IsEmpty)
+      if (source.IsEmpty) return;
+
+      if (list.Capacity - list.Count < source.Length)
       {
-        ref var view = ref Unsafe.As<List<T>, CollectionsMarshal.ListView<T>>(ref list!);
+        Grow(list, checked(list.Count + source.Length));
+      }
 
-        if (view.Items.Length - view.Size < source.Length) Grow(ref view, checked(view.Size + source.Length));
-
-        source.CopyTo(view.Items.AsSpan(view.Size));
-        view.Size += source.Length;
-        view.Version++;
+      foreach (var item in source)
+      {
+        list.Add(item);
       }
     }
 
     public void InsertRange(int index, ReadOnlySpan<T> source)
     {
-      if (!source.IsEmpty)
+      if (source.IsEmpty) return;
+
+      if (list.Capacity - list.Count < source.Length)
       {
-        ref var view = ref Unsafe.As<List<T>, CollectionsMarshal.ListView<T>>(ref list!);
+        Grow(list, checked(list.Count + source.Length));
+      }
 
-        if (view.Items.Length - view.Size < source.Length) Grow(ref view, checked(view.Size + source.Length));
-
-        if (index < view.Size) Array.Copy(view.Items, index, view.Items, index + source.Length, view.Size - index);
-
-        source.CopyTo(view.Items.AsSpan(index));
-        view.Size += source.Length;
-        view.Version++;
+      var i = index;
+      foreach (var item in source)
+      {
+        list.Insert(i++, item);
       }
     }
   }
 
-  // CollectionExtensions.InsertRange
-
-  private static void Grow<T>(ref CollectionsMarshal.ListView<T> list, int capacity)
+  /// <summary>
+  ///   仅替换 List 的内部数组（首个引用字段）以预留容量，元素数由后续 Add/Insert 维护。
+  /// </summary>
+  private static void Grow<T>(List<T> list, int requiredCapacity)
   {
-    SetCapacity(ref list, GetNewCapacity(ref list, capacity));
+    ref var view = ref Unsafe.As<List<T>, CollectionsMarshal.ItemsView<T>>(ref list);
+    var oldItems = view.Items;
+    var newItems = new T[GetNewCapacity(oldItems.Length == 0 ? 4 : oldItems.Length * 2, requiredCapacity)];
+    Array.Copy(oldItems, newItems, list.Count);
+    view.Items = newItems;
   }
 
-  private static void SetCapacity<T>(ref CollectionsMarshal.ListView<T> list, int value)
+  private static int GetNewCapacity(int currentCapacity, int requiredCapacity)
   {
-    if (value != list.Items.Length)
-    {
-      if (value > 0)
-      {
-        var newItems = new T[value];
-        if (list.Size > 0) Array.Copy(list.Items, newItems, list.Size);
-        list.Items = newItems;
-      }
-      else
-      {
-        list.Items = [];
-      }
-    }
-  }
-
-  private static int GetNewCapacity<T>(ref CollectionsMarshal.ListView<T> list, int capacity)
-  {
-    var newCapacity = list.Items.Length == 0 ? 4 : 2 * list.Items.Length;
-
+    var newCapacity = currentCapacity * 2;
     if ((uint)newCapacity > ArrayMaxLength) newCapacity = ArrayMaxLength;
-
-    if (newCapacity < capacity) newCapacity = capacity;
-
+    if (newCapacity < requiredCapacity) newCapacity = requiredCapacity;
     return newCapacity;
   }
 
-#pragma warning restore CS0436
 #endif
 
   extension<T>(ObservableCollection<T> collection)

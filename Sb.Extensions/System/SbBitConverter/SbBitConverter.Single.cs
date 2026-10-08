@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CommunityToolkit.HighPerformance;
@@ -23,8 +24,16 @@ partial class SbBitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float WithEndianness(bool useBigEndianMode = false)
     {
+#if NET8_0_OR_GREATER
+      // 仅当主机字节序与目标字节序不一致时才需要翻转；与旧实现（span 往返 + ApplyEndianness）语义一致。
+      return BitConverter.IsLittleEndian == useBigEndianMode
+        ? BitConverter.UInt32BitsToSingle(
+          BinaryPrimitives.ReverseEndianness(BitConverter.SingleToUInt32Bits(source)))
+        : source;
+#else
       var span = source.AsReadOnlyByteSpan();
       return span.ToT<float>(useBigEndianMode);
+#endif
     }
   }
 
@@ -83,8 +92,16 @@ partial class SbBitConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public double WithEndianness(bool useBigEndianMode = false)
     {
+#if NET8_0_OR_GREATER
+      // 仅当主机字节序与目标字节序不一致时才需要翻转；与旧实现（span 往返 + ApplyEndianness）语义一致。
+      return BitConverter.IsLittleEndian == useBigEndianMode
+        ? BitConverter.UInt64BitsToDouble(
+          BinaryPrimitives.ReverseEndianness(BitConverter.DoubleToUInt64Bits(source)))
+        : source;
+#else
       var span = source.AsReadOnlyByteSpan();
       return span.ToT<double>(useBigEndianMode);
+#endif
     }
   }
 

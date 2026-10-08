@@ -1,0 +1,39 @@
+<Project>
+
+  <!-- NuGet Central Package Management：全仓库包版本集中于此，各 csproj 只写 PackageReference 不带 Version。
+       个别需要不同版本的（如 4.3 分支生成器的 Roslyn），用 VersionOverride 覆盖。 -->
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Roslyn / 生成器 -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
+
+    <!-- Sb.Extensions 运行时依赖 -->
+    <PackageVersion Include="CommunityToolkit.HighPerformance" Version="8.4.2" />
+    <PackageVersion Include="PolySharp" Version="1.16.0" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.9" />
+    <PackageVersion Include="System.Buffers" Version="4.6.1" />
+    <PackageVersion Include="System.Memory" Version="4.6.3" />
+    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageVersion Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+
+    <!-- 测试 -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+
+    <!-- 基准 -->
+    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
+
+    <!-- .NET Framework 4.8 运行时验证（仅构建期引用程序集） -->
+    <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
+  </ItemGroup>
+
+</Project>

@@ -394,12 +394,9 @@ public class FixedSizeRingBuffer<T> : IEnumerable<T>, IReadOnlyList<T> where T :
 
     // 第一段：从 tail 到缓冲区末尾
     var firstLen = Math.Min(available, _buffer.Length - tail);
-    var read = stream.Read(buffer, tail, firstLen);
-    if (read > 0)
-    {
-      totalRead += read;
-      Count += read;
-    }
+    var read = ReadExactlyFromStream(stream, buffer, tail, firstLen);
+    totalRead += read;
+    Count += read;
 
     if (read < firstLen)
     {
@@ -410,12 +407,35 @@ public class FixedSizeRingBuffer<T> : IEnumerable<T>, IReadOnlyList<T> where T :
     var secondLen = available - firstLen;
     if (secondLen > 0)
     {
-      read = stream.Read(buffer, 0, secondLen);
-      if (read > 0)
+      read = ReadExactlyFromStream(stream, buffer, 0, secondLen);
+      totalRead += read;
+      Count += read;
+    }
+
+    return totalRead;
+  }
+
+  /// <summary>
+  ///   循环补读直至读满 <paramref name="count" /> 字节或流结束，避免单次 <c>Stream.Read</c> 短读导致静默少读。
+  /// </summary>
+  /// <param name="stream">要读取的流</param>
+  /// <param name="buffer">目标缓冲</param>
+  /// <param name="offset">缓冲内偏移</param>
+  /// <param name="count">请求读取的字节数</param>
+  /// <returns>实际读取的字节数</returns>
+  private static int ReadExactlyFromStream(Stream stream, byte[] buffer, int offset, int count)
+  {
+    var totalRead = 0;
+    while (totalRead < count)
+    {
+      var read = stream.Read(buffer, offset + totalRead, count - totalRead);
+      if (read <= 0)
       {
-        totalRead += read;
-        Count += read;
+        // 流结束
+        break;
       }
+
+      totalRead += read;
     }
 
     return totalRead;

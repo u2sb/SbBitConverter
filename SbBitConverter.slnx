@@ -1,7 +1,10 @@
 <Solution>
-  <Project Path="Sb.Extensions/Sb.Extensions.shproj" />
+  <Project Path="Sb.Extensions/Sb.Extensions.csproj" />
   <Project Path="SbBitConverter.SourceGenerator-4.3/SbBitConverter.SourceGenerator.4.3.csproj" />
   <Project Path="SbBitConverter.SourceGenerator/SbBitConverter.SourceGenerator.csproj" />
   <Project Path="SbBitConverter/SbBitConverter.csproj" />
-  <Project Path="T0/T0.csproj" />
+  <Project Path="SbBitConverter.Tests/SbBitConverter.Tests.csproj" />
+  <Project Path="SbBitConverter.Tests.Gen43/SbBitConverter.Tests.Gen43.csproj" />
+  <Project Path="SbBitConverter.SourceGenerator.Tests/SbBitConverter.SourceGenerator.Tests.csproj" />
+  <Project Path="Bench/Bench.csproj" />
 </Solution>

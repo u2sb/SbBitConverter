@@ -351,6 +351,14 @@ public readonly ref struct BitSpan
   {
     if (other.Length != Length)
       BitSpanException.ThrowLengthMismatch(Length, other.Length);
+
+    // 字节级快速路径：双方起始位偏移均为 0 时按整字节处理
+    if (_startBitOffset == 0 && other._startBitOffset == 0)
+    {
+      ApplyBitwiseAligned(other, static (a, b) => (byte)(a & b));
+      return;
+    }
+
     ApplyBitwise(other, (a, b) => a & b);
   }
 
@@ -362,6 +370,14 @@ public readonly ref struct BitSpan
   {
     if (other.Length != Length)
       BitSpanException.ThrowLengthMismatch(Length, other.Length);
+
+    // 字节级快速路径：双方起始位偏移均为 0 时按整字节处理
+    if (_startBitOffset == 0 && other._startBitOffset == 0)
+    {
+      ApplyBitwiseAligned(other, static (a, b) => (byte)(a | b));
+      return;
+    }
+
     ApplyBitwise(other, (a, b) => a | b);
   }
 
@@ -373,7 +389,36 @@ public readonly ref struct BitSpan
   {
     if (other.Length != Length)
       BitSpanException.ThrowLengthMismatch(Length, other.Length);
+
+    // 字节级快速路径：双方起始位偏移均为 0 时按整字节处理
+    if (_startBitOffset == 0 && other._startBitOffset == 0)
+    {
+      ApplyBitwiseAligned(other, static (a, b) => (byte)(a ^ b));
+      return;
+    }
+
     ApplyBitwise(other, (a, b) => a ^ b);
+  }
+
+  /// <summary>
+  ///   字节级按位操作快速路径：双方起始位偏移均为 0 时按整字节处理，
+  ///   尾部不完整字节仅作用于有效位（掩码保护高位），消除逐位 Get/Set 与委托调用。
+  /// </summary>
+  /// <param name="other">另一个 BitSpan（长度已校验一致）</param>
+  /// <param name="op">字节级按位操作委托</param>
+  private void ApplyBitwiseAligned(BitSpan other, Func<byte, byte, byte> op)
+  {
+    var fullBytes = Length >> 3;
+    for (var i = 0; i < fullBytes; i++)
+      _span[i] = op(_span[i], other._span[i]);
+
+    var tailBits = Length & 7;
+    if (tailBits > 0)
+    {
+      var mask = (byte)((1 << tailBits) - 1);
+      var result = op(_span[fullBytes], other._span[fullBytes]);
+      _span[fullBytes] = (byte)((result & mask) | (_span[fullBytes] & ~mask));
+    }
   }
 
   /// <summary>

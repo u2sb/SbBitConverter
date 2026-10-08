@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 4.3 生成器分支的运行时测试：与 SbBitConverter.Tests 共享同一套测试源码与模型，
+       仅生成器分支不同，用于验证两个源生成器版本产出代码的行为一致性。 -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SbBitConverter\SbBitConverter.csproj" />
+    <ProjectReference Include="..\Sb.Extensions\Sb.Extensions.csproj" />
+  </ItemGroup>
+
+  <!-- 生成器（4.3 分支） -->
+  <ItemGroup>
+    <ProjectReference Include="..\SbBitConverter.SourceGenerator-4.3\SbBitConverter.SourceGenerator.4.3.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <!-- 共享测试源码（链接，不复制） -->
+  <ItemGroup>
+    <Compile Include="..\SbBitConverter.Tests\GlobalUsings.cs" Link="GlobalUsings.cs" />
+    <Compile Include="..\SbBitConverter.Tests\Models\**\*.cs" Link="Models\%(Filename)%(Extension)" />
+    <Compile Include="..\SbBitConverter.Tests\Tests\**\*.cs" Link="Tests\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

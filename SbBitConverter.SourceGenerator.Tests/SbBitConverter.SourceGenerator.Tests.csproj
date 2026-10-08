@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 源生成器测试：通过 CSharpGeneratorDriver 在内存中驱动 4.8 / 4.3 两个分支，
+       覆盖基线快照、双分支等价性、诊断、增量缓存行为。 -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- 4.8 分支：直接引用生成器程序集（测试内 new SbStructGenerator()） -->
+  <ItemGroup>
+    <ProjectReference Include="..\SbBitConverter.SourceGenerator\SbBitConverter.SourceGenerator.csproj" />
+  </ItemGroup>
+
+  <!-- 4.3 分支：只构建产物，测试内通过 AssemblyLoadContext 加载（避免同名程序集冲突） -->
+  <ItemGroup>
+    <ProjectReference Include="..\SbBitConverter.SourceGenerator-4.3\SbBitConverter.SourceGenerator.4.3.csproj"
+                      ReferenceOutputAssembly="false" />
+    <None Include="..\SbBitConverter.SourceGenerator-4.3\bin\$(Configuration)\netstandard2.0\SbBitConverter.SourceGenerator.dll"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="Gen43\SbBitConverter.SourceGenerator.dll"
+          Visible="false" />
+  </ItemGroup>
+
+  <!-- 被测源码：与运行时测试共享同一套模型 -->
+  <ItemGroup>
+    <ProjectReference Include="..\SbBitConverter\SbBitConverter.csproj" />
+    <ProjectReference Include="..\Sb.Extensions\Sb.Extensions.csproj" />
+    <None Include="..\SbBitConverter.Tests\Models\Models.cs"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="Models\Models.cs"
+          Visible="false" />
+  </ItemGroup>
+
+  <!-- 生成产物基线（逐字节快照）。基线不参与编译，仅作文本比对 -->
+  <ItemGroup>
+    <Compile Remove="Baselines\**\*.cs" />
+    <None Include="Baselines\**\*.g.cs" CopyToOutputDirectory="PreserveNewest" Link="Baselines\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>
